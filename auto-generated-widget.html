@@ -4,7 +4,7 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
-    <title>Widget / Template</title>
+    <title>Widget / inlineeditor</title>
 
     <!-- ChiliPeppr is based on bootstrap CSS. -->
     <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
@@ -16,15 +16,175 @@
     <style type='text/css'>
 /* CSS for ChiliPeppr Widget */
 
-#com-chilipeppr-widget-template {
-   
+body,html {
+    height:100%;
+}
+#com-chilipeppr-widget-inlineeditor {
+   /*height:100%;*/
+   margin-bottom: 0;
 }
 
-#com-chilipeppr-widget-template .nav-tabs>li>a {
+#com-chilipeppr-widget-inlineeditor .nav-tabs>li>a {
     padding: 2px 6px;
 }
 
-
+#com-chilipeppr-widget-inlineeditor .panel-heading {
+    background-color: #3D444D;
+    /*height:3.7em;*/
+    height:55px;
+}
+.title-words {
+    color:white;
+    float:left;
+    line-height: 2em;
+}
+.logo {
+    float:left;
+    height:2.05em;
+    width:6.5em;
+    background-image: url(https://www.zipwhip.com/dist/img/global/logo.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.panel-body .close {
+    margin-left:0.5em;
+}
+.panel-body {
+    /*height:100%;*/
+    /*position:relative;*/
+    padding:0;
+    margin:0;
+}
+.sidebar {
+    padding: 16px;
+    margin: 0;
+    /*font-size: 11px;*/
+    width: 260px;
+    position: absolute;
+    top: 55px;
+    left: 0;
+    border-right: solid 1px #e9eced;
+    /*height: 100%; */
+    height: calc(100vh - 85px);
+    background: #eee;
+}
+.sidebar p {
+    padding:0;
+    margin:0;
+}
+.sidebar select, .sidebar input, .sidebar textarea {
+    margin-bottom: 10px;
+}
+.sidebar .tab-pane {
+    padding-top:10px;
+}
+.content {
+    margin:0;
+    margin-left: 260px;
+    position: relative;
+    /*margin: 0;*/
+    padding: 0;
+    height: calc(100vh - 85px);
+}
+fieldset.column {
+    display: block;
+    height: 100%;
+}
+.content .left {
+    position: absolute;
+    left: 0;
+}
+.content .right {
+    position: absolute;
+    right: 0;
+}
+.content .top {
+    height: 25%;
+    top: 0;
+    border-bottom: solid 1px #cfd6d9;
+}
+.content .bottom {
+    height: 75%;
+    bottom: 0;
+}
+.content .window {
+    width: 100%;
+}
+.content .bottom, .content .top {
+    border-right: solid 1px #cfd6d9;
+    position: absolute;
+}
+.handler_vertical {
+    z-index: 200;
+    width: 8px;
+    height: 100%;
+    padding: 5px 0;
+    cursor: col-resize;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-left: -4px;
+}
+.handler_horizontal {
+    z-index: 90;
+    width: 100%;
+    height: 8px;
+    padding: 0 1px;
+    cursor: row-resize;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-top: -4px;
+}
+.windowLabel {
+    border: 1px solid rgba(255,255,255,0);
+    background: rgba(243,245,246,.8);
+    display: inline-block;
+    position: absolute;
+    top: 7px;
+    right: 5px;
+    text-align: center;
+    font-size: 11px;
+    border-radius: 20px;
+    z-index: 30;
+    color: #7f94a1;
+    line-height: 23px;
+    padding: 0 7px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    -webkit-backdrop-filter: blur(10px);
+    -moz-transition: all .1s;
+    -webkit-transition: all .1s;
+    -o-transition: all .1s;
+    -ms-transition: all .1s;
+    transition: all .1s;
+    outline: 0;
+    /*color: #39464E;*/
+    text-decoration: none;
+}
+.windowLabel i {
+    margin-left: 5px;
+}
+.bts {
+    font-weight: 900;
+}
+.btb, .btl, .btm, .bts, .fab {
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-size: inherit;
+    vertical-align: -14.28571429%;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transform: translate(0,0);
+}
+.bt-gear:before {
+    content: "\e019";
+}
+.aceeditor {
+    height:100%;
+}
     </style>
 
     <script type='text/javascript'>
@@ -58,14 +218,26 @@ requirejs.config({
         // Example of how to define the key (you make up the key) and the URL
         // Make sure you DO NOT put the .js at the end of the URL
         // SmoothieCharts: '//smoothiecharts.org/smoothie',
+        //AceEditor: '//cdn.jsdelivr.net/ace/1.2.3/min/ace',
+        ace: '//ace.c9.io/build/src/ace',
+        aceAutoCompletion: '//ace.c9.io/build/src/ext-language_tools',
+        AceEditorLua: '//cdn.jsdelivr.net/ace/1.2.3/min/mode-lua',
+        AceEditorCss: '//cdn.jsdelivr.net/ace/1.2.3/min/mode-css',
+        AceEditorHtml: '//cdn.jsdelivr.net/ace/1.2.3/min/mode-html',
+        AceEditorJavascript: '//cdn.jsdelivr.net/ace/1.2.3/min/mode-javascript',
     },
     shim: {
         // See require.js docs for how to define dependencies that
         // should be loaded before your script/widget.
+        AceEditorLua: ["ace"],
+        AceEditorCss: ["ace"],
+        AceEditorHtml: ["ace"],
+        AceEditorJavascript: ["ace"],
+        aceAutoCompletion: ["ace", "AceEditorHtml", "AceEditorCss", "AceEditorJavascript"]
     }
 });
 
-cprequire_test(["inline:com-chilipeppr-widget-template"], function(myWidget) {
+cprequire_test(["inline:com-chilipeppr-widget-inlineeditor"], function(myWidget) {
 
     // Test this element. This code is auto-removed by the chilipeppr.load()
     // when using this widget in production. So use the cpquire_test to do things
@@ -99,24 +271,25 @@ cprequire_test(["inline:com-chilipeppr-widget-template"], function(myWidget) {
 
     // init my widget
     myWidget.init();
-    $('#' + myWidget.id).css('margin', '20px');
+    // $('#' + myWidget.id).css('margin', '20px');
+    // $("body").css('padding', '20px');
     $('title').html(myWidget.name);
 
 } /*end_test*/ );
 
 // This is the main definition of your widget. Give it a unique name.
-cpdefine("inline:com-chilipeppr-widget-template", ["chilipeppr_ready", /* other dependencies here */ ], function() {
+cpdefine("inline:com-chilipeppr-widget-inlineeditor", ["chilipeppr_ready", "aceAutoCompletion" ], function() {
     return {
         /**
          * The ID of the widget. You must define this and make it unique.
          */
-        id: "com-chilipeppr-widget-template", // Make the id the same as the cpdefine id
-        name: "Widget / Template", // The descriptive name of your widget.
-        desc: "This example widget gives you a framework for creating your own widget. Please change this description once you fork this template and create your own widget. Make sure to run runme.js every time you are done editing your code so you can regenerate your README.md file, regenerate your auto-generated-widget.html, and automatically push your changes to Github.", // A description of what your widget does
-        url: "http://raw.githubusercontent.com/chilipeppr/widget-template/master/auto-generated-widget.html",       // The final URL of the working widget as a single HTML file with CSS and Javascript inlined. You can let runme.js auto fill this if you are using Cloud9.
-        fiddleurl: "http://ide.c9.io/chilipeppr/widget-template", // The edit URL. This can be auto-filled by runme.js in Cloud9 if you'd like, or just define it on your own to help people know where they can edit/fork your widget
-        githuburl: "http://github.com/chilipeppr/widget-template", // The backing github repo
-        testurl: "http://widget-template-chilipeppr.c9users.io/widget.html",   // The standalone working widget so can view it working by itself
+        id: "com-chilipeppr-widget-inlineeditor", // Make the id the same as the cpdefine id
+        name: "Widget / inlineeditor", // The descriptive name of your widget.
+        desc: "This example widget gives you a framework for creating your own widget. Please change this description once you fork this inlineeditor and create your own widget. Make sure to run runme.js every time you are done editing your code so you can regenerate your README.md file, regenerate your auto-generated-widget.html, and automatically push your changes to Github.", // A description of what your widget does
+        url: "http://raw.githubusercontent.com/chilipeppr/widget-inlineeditor/master/auto-generated-widget.html",       // The final URL of the working widget as a single HTML file with CSS and Javascript inlined. You can let runme.js auto fill this if you are using Cloud9.
+        fiddleurl: "http://ide.c9.io/chilipeppr/widget-inlineeditor", // The edit URL. This can be auto-filled by runme.js in Cloud9 if you'd like, or just define it on your own to help people know where they can edit/fork your widget
+        githuburl: "http://github.com/chilipeppr/widget-inlineeditor", // The backing github repo
+        testurl: "http://widget-inlineeditor-chilipeppr.c9users.io/widget.html",   // The standalone working widget so can view it working by itself
         /**
          * Define pubsub signals below. These are basically ChiliPeppr's event system.
          * ChiliPeppr uses amplify.js's pubsub system so please refer to docs at
@@ -164,11 +337,146 @@ cpdefine("inline:com-chilipeppr-widget-template", ["chilipeppr_ready", /* other 
         init: function() {
             console.log("I am being initted. Thanks.");
 
+            
             this.setupUiFromLocalStorage();
             this.btnSetup();
             this.forkSetup();
+            var that = this;
+            setTimeout(function() {
+                that.initAceEditor();
+            }, 1000);
+            
 
             console.log("I am done being initted.");
+        },
+        initAceEditor: function() {
+            var sampleContent = `<div id="SprintCallCenterWidget" class="widget">
+    <div class="panel">
+        <div class="panel-heading">
+            Sprint Call Center
+        </div>
+        <div class="panel-body">
+        </div>
+    </div>
+</div>
+`;
+             this.loadAce("aceeditor-html", sampleContent, "ace/mode/html");
+             this.loadAce("aceeditor-css", "#SprintCallCenterWidget {\n}", "ace/mode/css");
+             var sampleContent = `class SprintCallCenterWidget extends Zipwhip.Widget {
+    constructor(props) {
+        super(props);
+    }
+    
+    onActivate() {
+        
+    }
+    
+    onDeactivate() {
+        
+    }
+    
+    onExpand() {
+        
+    }
+    
+    onCollapse() {
+        
+    }
+}
+`;
+             this.loadAce("aceeditor-javascript", sampleContent, "ace/mode/javascript");
+        },
+        aceCurrentSessionName: null,
+        aceCurrentSession: null,
+        aceEditors: [],
+        aceSessions: [],
+        aceIsLoaded: [],
+        loadAce: function(aceid, sampleContent, aceMode) {
+
+            // debugger;
+            console.log("trying to get ace. ace:"); //, ace, " aceId:", this.aceId);
+            //require("ace/mode/text_highlight_rules", function(xace) {
+            if ('ace' in window && ace) { // && 'setValue' in ace) {
+                console.log("got ace. ace:", ace);
+                
+                if (this.aceIsLoaded[aceid]) {
+                    console.log("You are asking Ace to load a 2nd time, but we are already loaded.");
+                    //return;
+                } else { 
+                    // load ace
+                    var editor = ace.edit(aceid);
+                    editor.setTheme("ace/theme/monokai");
+                    //document.getElementById('editor').style.fontSize='13px';
+                    this.aceEditors[aceid] = editor;
+                    //this.setScriptFromTemporaryFile();
+                    
+                    editor.commands.addCommand({
+                        name: 'mySave',
+                        bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
+                        exec: this.fileLocalSave.bind(this),
+                        readOnly: false // false if this command should not apply in readOnly mode
+                    });
+                    
+                    editor.setOptions({
+                        enableBasicAutocompletion: true,
+                        enableSnippets: true,
+                        enableLiveAutocompletion: true
+                    });
+                    
+                    editor.on("changeSession", function(e) {
+                        console.log("got editor changeSession");
+                    });
+                    
+                    //this.resize();
+                    this.aceIsLoaded[aceid] = true;
+                }
+                // debugger;
+                // now create the session just for this document
+                //var docu = ace.createEditSession('', "ace/mode/lua");
+                
+                // see if we have a session already for this
+                if (aceid in this.aceSessions) {
+                    // we actually already have a session, cool
+                    this.aceCurrentSession = this.aceSessions[this.aceSessionName];
+                    
+                } else {
+                    // we don't have a session, so need to create one
+                    if (sampleContent == null) sampleContent = "";
+                    this.aceCurrentSession = new ace.EditSession(sampleContent, aceMode)
+                    this.aceSessions[aceid] = this.aceCurrentSession;
+                    
+                }
+
+                this.aceEditors[aceid].setSession(this.aceCurrentSession);
+                //editor.getSession().setMode("ace/mode/lua");
+                this.aceEditors[aceid].getSession().setTabSize(2);
+                this.aceEditors[aceid].getSession().setUseSoftTabs(true);
+                //this.editor.getSession().setUseWrapMode(true);
+                this.aceEditors[aceid].getSession().setUndoManager(new ace.UndoManager());
+                
+                /*
+                this.editor.getSession().on('change', function(e) {
+                    // e.type, etc
+                    console.log("got change on editor. e:", e);
+                });
+                
+                this.editor.getSession().selection.on('changeSelection', function(e) {
+                    console.log("got changeSelection on editor. e:", e); 
+                });
+                */
+                
+                console.log("ace session created:", this.aceCurrentSession);
+
+            } else {
+                console.log("ace is currently undefined so retry later");
+                setTimeout(this.loadAce.bind(this), 1000);
+            }
+            
+            
+         
+        },
+        fileLocalSave: function(event) {
+            console.log("got fileLocalSave. event:", event);    
         },
         /**
          * Call this method from init to setup all the buttons when this widget
@@ -386,7 +694,7 @@ cpdefine("inline:com-chilipeppr-widget-template", ["chilipeppr_ready", /* other 
 </head>
 
 <body>
-    <div id="com-chilipeppr-widget-template" class="panel panel-default">
+    <div id="com-chilipeppr-widget-inlineeditor" class="panel panel-default">
         <div class="panel-heading ">
 
             <div class="btn-toolbar pull-right" role="toolbar">
@@ -405,38 +713,234 @@ cpdefine("inline:com-chilipeppr-widget-template", ["chilipeppr_ready", /* other 
                         <ul class="dropdown-menu dropdown-menu-right" role="menu"></ul>
                     </div>
                 </div>
-            </div> <span class="panel-title" data-toggle="popover">Template Widget</span> <span style="font-size:9px;" class="fb-build">v1</span>
+            </div> 
+            
+            <span class="panel-title">
+                <div class="logo">
+                    <!--<a href="/" class="logo"></a>-->
+                </div>
+                <div class="title-words">Inline Editor</div>
+            </span>
 
         </div>
         <div class="panel-body">
-            <!-- Nav tabs -->
-            <ul class="nav nav-tabs" role="tablist">
-                <li class="active"><a href="#com-chilipeppr-widget-template-tab1" role="tab" data-toggle="tab">Tab 1</a>
-                </li>
-                <li><a href="#com-chilipeppr-widget-template-tab2" role="tab" data-toggle="tab">Tab 2</a></li>
-                <li><a href="#com-chilipeppr-widget-template-tab3" role="tab" data-toggle="tab">Tab 3</a></li>
-            </ul>
-            <!-- Tab panes -->
-
-            <div class="tab-content">
+            
+            <div class="sidebar">
+                
+                <p>Widget ID</p>
+                <input type="text" class="form-control" placeholder="yourorg-appid" value="SprintCallCenter"></input>
+                
+                <p>Widget Name</p>
+                <input type="text" class="form-control" value="Sprint Call Center"></input>
+                
+                <p>Widget Description</p>
+                <textarea class="form-control" rows="2">This widget adds the features required by Sprint to run toll free texting in their call center.</textarea>
+                    
+                <p>Private/Public</p>
+                <select class="form-control snippet-frontend-event">
+                    <option>Public</option>
+                    <option>Private This Account</option>
+                    <option>Private This Org</option>
+                </select>
+                
+                <p>Widget Image</p>
+                <input type="file">
+                
+                &nbsp;
+                
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="active"><a href="#com-chilipeppr-widget-inlineeditor-tab1" role="tab" data-toggle="tab">
+                        Frontend
+                    </a></li>
+                    <li><a href="#com-chilipeppr-widget-inlineeditor-tab2" role="tab" data-toggle="tab">
+                        Backend
+                    </a></li>
+                </ul>
+                <!-- Tab panes -->
     
-                <!-- Tab 1 -->
-                <div class="tab-pane active" id="com-chilipeppr-widget-template-tab1">
-                    <p>This is the content of tab 1.</p>
-                    <div class="">
-                        <button type="button" class="btn btn-xs btn-default btn-helloworld2" style="margin: 4px 0;">Hello World 2</button>
+                <div class="tab-content">
+        
+                        
+                        
+                    <!-- Tab 1 -->
+                    <div class="tab-pane active" id="com-chilipeppr-widget-inlineeditor-tab1">
+                
+                        <p>UI Location</p>
+                        <p style="font-size:9px;xline-heigh:9px;margin-bottom:4px;">All widgets will appear in the sidebar unless hidden. However, an app can attach UI to any element in the main UI once loaded.</p>
+                        <select class="form-control snippet-frontend-event">
+                            <option>In Sidebar</option>
+                            <option>Hidden</option>
+                        </select>
+                
+                        <p>Insert Subscribe Event Snippet</p>
+                        <select class="form-control snippet-frontend-event">
+                            <option>onLoadZipwhipBefore</option>
+                            <option>onLoadZipwhip</option>
+                            <option>onInitApp</option>
+                            <option>onActivateApp</option>
+                            <option>onDeactivateApp</option>
+                            <option>onTextIncoming</option>
+                            <option>onTextBeforeOutgoing</option>
+                            <option>onTextOutgoing</option>
+                            <option>onTextBeforeMarkAsRead</option>
+                            <option>onTextMarkAsRead</option>
+                            <option>onTextBeforeMarkAsUnread</option>
+                            <option>onTextMarkAsUnread</option>
+                            <option>onTextMouesover</option>
+                            <option>onTextMouseout</option>
+                            <option>onTextDelete</option>
+                            <option>onTextSelect</option>
+                            <option>onTextClick</option>
+                            <option>onTextDoubleClick</option>
+                            <option>onConversationOpen</option>
+                            <option>onConversationOpenInNewWindow</option>
+                            <option>onConversationDelete</option>
+                            <option>onContactNameBeforeEdit</option>
+                            <option>onContactNameEdit</option>
+                            <option>onCompose</option>
+                            <option>onComposeKeypress</option>
+                            <option>onComposeDragDropped</option>
+                            <option>onComposeOverCharacterLimit</option>
+                        </select>
+                        
+                        <p>Your Publish Events</p>
+                        <form class="form-inline xform-horizontal">
+                          <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" class="form-control" style="width:70%;" placeholder="yourorg-appid" value="sprint-callcenter-myevent"></input>
+                                <button type="submit" class="btn btn-primary" style="float:right;">Create</button>
+                                <span class="glyphicon glyphicon-trash"></span> sprint-callcenter-oncrmlookup<br>
+                                <span class="glyphicon glyphicon-trash"></span> sprint-callcenter-oncrmput<br>
+                            </div>
+                          </div>
+                          
+                        </form>
+                        &nbsp;
+                        
+                        <p>Insert UI Element</p>
+                        <select class="form-control snippet-frontend-ui">
+                            <option>Contact Card</option>
+                            <option>Conversation Card</option>
+                            <option>Panel</option>
+                            <option>Well</option>
+                            <option>Container</option>
+                            <option>Button</option>
+                            <option>Button Group</option>
+                            <option>Dropdown</option>
+                            <option>Menu Item</option>
+                            <option>Overlay Modal</option>
+                            <option>Overlay Tooltip</option>
+                            <option>Overlay Popover</option>
+                            <option>Breadcrumbs</option>
+                            <option>Tabs</option>
+                            <option>Pagination</option>
+                            <option>Pager</option>
+                            <option>Grid</option>
+                            <option>List Group</option>
+                            <option>Tables</option>
+                            <option>Input Text</option>
+                            <option>Input Textarea</option>
+                            <option>Input Select</option>
+                            <option>Input Multi-Select</option>
+                            <option>Input Checkbox</option>
+                            <option>Input Radio</option>
+                            <option>Glyphicon</option>
+                            <option>Label</option>
+                            <option>Badge</option>
+                            <option>Alert</option>
+                            <option>Closeable Alert</option>
+                            <option>Progress Bar</option>
+                        </select>
+                        
+                        <p>Insert Database Call Snippet</p>
+                        <select class="form-control snippet-frontend-ui">
+                            <option>Insert Data</option>
+                            <option>Find or Query Data</option>
+                            <option>Update Data</option>
+                            <option>Remove Data</option>
+                            <option>Aggregate Data</option>
+                        </select>
+                        
+                        
+                        
+                    </div> <!-- end tab -->
+                    
+                    <!-- Tab 2 -->
+                    <div class="tab-pane" id="com-chilipeppr-widget-inlineeditor-tab2">
+                        
+                        <p>Insert Event Snippet</p>
+                        <select class="form-control snippet-backend">
+                            <option>onTextIncoming</option>
+                            <option>onTextOutgoing</option>
+                            <option>onTextMarkAsRead</option>
+                            <option>onTextMarkAsUnread</option>
+                            <option>onTextDelete</option>
+                            <option>onConversationUpdate</option>
+                            <option>onConversationDelete</option>
+                            <option>onContactEdit</option>
+                        </select>
+
+                        <p>Insert Database Call Snippet</p>
+                        <select class="form-control snippet-frontend-ui">
+                            <option>Insert Data</option>
+                            <option>Find or Query Data</option>
+                            <option>Update Data</option>
+                            <option>Remove Data</option>
+                            <option>Aggregate Data</option>
+                        </select>
+                        
+                    </div> <!-- end tab -->
+                    
+                </div> <!-- end tab content -->
+                
+            </div> <!-- end sidebar -->
+            <div class="content" style="xheight: 400px; opacity: 1;">
+          
+         
+                <fieldset class="column left" style="width: 55%;">
+                    
+                    <div class="window top" id="panel_html" data-panel_type="html" style="height: 23.7248%;">
+                        <div id="aceeditor-html" class="aceeditor"></div>
+                        <a href="#" class="windowLabel" data-panel="html">
+                          <span class="xlabel">HTML</span><i class="bts bt-gear"></i>
+                        </a>
                     </div>
-                </div>
+                    
+                    <div class="handler handler_horizontal" style="top: 201px;"></div>
+                  
+                    <div class="window bottom" id="panel_js" data-panel_type="js" style="height: 76.2752%;">
+                        <div id="aceeditor-javascript" class="aceeditor"></div>
+                        <a href="#" class="windowLabel" data-panel="js">
+                          <span class="xlabel">JavaScript</span><i class="bts bt-gear"></i>
+                        </a>
+                    </div>
+                    
+                </fieldset>
+                
+                <div class="handler handler_vertical" style="left: 428px;"></div>
+                
+                <fieldset class="column right" style="width: 45%;">
 
-                <!-- Tab 2 -->
-                <div class="tab-pane" id="com-chilipeppr-widget-template-tab2">
-                    <p>This is the content of tab 2.</p>
-                </div>
+                    <div class="window top" id="panel_css" data-panel_type="css" style="height: 26.809%;">
+                        <div id="aceeditor-css" class="aceeditor"></div>
+                        <a href="#" class="windowLabel" data-panel="css">
+                          <span class="xlabel">CSS</span><i class="bts bt-gear"></i>
+                        </a>
+                    </div>
 
-                <!-- Tab 3 -->
-                <div class="tab-pane" id="com-chilipeppr-widget-template-tab3">
-                    <p>This is the content of tab 3.</p>
-                </div>
+                    <div class="handler handler_horizontal" style="top: 227px;"></div>
+
+                    <div id="result" class="window bottom" style="height: 73.191%;">
+                        <iframe name="result" sandbox="allow-forms allow-popups allow-scripts allow-same-origin allow-modals" frameborder="0"></iframe>
+                    
+                        <span class="windowLabel">Result</span>
+                    
+                    </div>
+
+                </fieldset>
+
+
 
             </div>
 

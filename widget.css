@@ -1,10 +1,171 @@
 /* CSS for ChiliPeppr Widget */
 
-#com-chilipeppr-widget-template {
-   
+body,html {
+    height:100%;
+}
+#com-chilipeppr-widget-inlineeditor {
+   /*height:100%;*/
+   margin-bottom: 0;
 }
 
-#com-chilipeppr-widget-template .nav-tabs>li>a {
+#com-chilipeppr-widget-inlineeditor .nav-tabs>li>a {
     padding: 2px 6px;
 }
 
+#com-chilipeppr-widget-inlineeditor .panel-heading {
+    background-color: #3D444D;
+    /*height:3.7em;*/
+    height:55px;
+}
+.title-words {
+    color:white;
+    float:left;
+    line-height: 2em;
+}
+.logo {
+    float:left;
+    height:2.05em;
+    width:6.5em;
+    background-image: url(https://www.zipwhip.com/dist/img/global/logo.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.panel-body .close {
+    margin-left:0.5em;
+}
+.panel-body {
+    /*height:100%;*/
+    /*position:relative;*/
+    padding:0;
+    margin:0;
+}
+.sidebar {
+    padding: 16px;
+    margin: 0;
+    /*font-size: 11px;*/
+    width: 260px;
+    position: absolute;
+    top: 55px;
+    left: 0;
+    border-right: solid 1px #e9eced;
+    /*height: 100%; */
+    height: calc(100vh - 85px);
+    background: #eee;
+}
+.sidebar p {
+    padding:0;
+    margin:0;
+}
+.sidebar select, .sidebar input, .sidebar textarea {
+    margin-bottom: 10px;
+}
+.sidebar .tab-pane {
+    padding-top:10px;
+}
+.content {
+    margin:0;
+    margin-left: 260px;
+    position: relative;
+    /*margin: 0;*/
+    padding: 0;
+    height: calc(100vh - 85px);
+}
+fieldset.column {
+    display: block;
+    height: 100%;
+}
+.content .left {
+    position: absolute;
+    left: 0;
+}
+.content .right {
+    position: absolute;
+    right: 0;
+}
+.content .top {
+    height: 25%;
+    top: 0;
+    border-bottom: solid 1px #cfd6d9;
+}
+.content .bottom {
+    height: 75%;
+    bottom: 0;
+}
+.content .window {
+    width: 100%;
+}
+.content .bottom, .content .top {
+    border-right: solid 1px #cfd6d9;
+    position: absolute;
+}
+.handler_vertical {
+    z-index: 200;
+    width: 8px;
+    height: 100%;
+    padding: 5px 0;
+    cursor: col-resize;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-left: -4px;
+}
+.handler_horizontal {
+    z-index: 90;
+    width: 100%;
+    height: 8px;
+    padding: 0 1px;
+    cursor: row-resize;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-top: -4px;
+}
+.windowLabel {
+    border: 1px solid rgba(255,255,255,0);
+    background: rgba(243,245,246,.8);
+    display: inline-block;
+    position: absolute;
+    top: 7px;
+    right: 5px;
+    text-align: center;
+    font-size: 11px;
+    border-radius: 20px;
+    z-index: 30;
+    color: #7f94a1;
+    line-height: 23px;
+    padding: 0 7px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    -webkit-backdrop-filter: blur(10px);
+    -moz-transition: all .1s;
+    -webkit-transition: all .1s;
+    -o-transition: all .1s;
+    -ms-transition: all .1s;
+    transition: all .1s;
+    outline: 0;
+    /*color: #39464E;*/
+    text-decoration: none;
+}
+.windowLabel i {
+    margin-left: 5px;
+}
+.bts {
+    font-weight: 900;
+}
+.btb, .btl, .btm, .bts, .fab {
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-size: inherit;
+    vertical-align: -14.28571429%;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transform: translate(0,0);
+}
+.bt-gear:before {
+    content: "\e019";
+}
+.aceeditor {
+    height:100%;
+}

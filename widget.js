@@ -27,14 +27,26 @@ requirejs.config({
         // Example of how to define the key (you make up the key) and the URL
         // Make sure you DO NOT put the .js at the end of the URL
         // SmoothieCharts: '//smoothiecharts.org/smoothie',
+        //AceEditor: '//cdn.jsdelivr.net/ace/1.2.3/min/ace',
+        ace: '//ace.c9.io/build/src/ace',
+        aceAutoCompletion: '//ace.c9.io/build/src/ext-language_tools',
+        AceEditorLua: '//cdn.jsdelivr.net/ace/1.2.3/min/mode-lua',
+        AceEditorCss: '//cdn.jsdelivr.net/ace/1.2.3/min/mode-css',
+        AceEditorHtml: '//cdn.jsdelivr.net/ace/1.2.3/min/mode-html',
+        AceEditorJavascript: '//cdn.jsdelivr.net/ace/1.2.3/min/mode-javascript',
     },
     shim: {
         // See require.js docs for how to define dependencies that
         // should be loaded before your script/widget.
+        AceEditorLua: ["ace"],
+        AceEditorCss: ["ace"],
+        AceEditorHtml: ["ace"],
+        AceEditorJavascript: ["ace"],
+        aceAutoCompletion: ["ace", "AceEditorHtml", "AceEditorCss", "AceEditorJavascript"]
     }
 });
 
-cprequire_test(["inline:com-chilipeppr-widget-template"], function(myWidget) {
+cprequire_test(["inline:com-chilipeppr-widget-inlineeditor"], function(myWidget) {
 
     // Test this element. This code is auto-removed by the chilipeppr.load()
     // when using this widget in production. So use the cpquire_test to do things
@@ -68,20 +80,21 @@ cprequire_test(["inline:com-chilipeppr-widget-template"], function(myWidget) {
 
     // init my widget
     myWidget.init();
-    $('#' + myWidget.id).css('margin', '20px');
+    // $('#' + myWidget.id).css('margin', '20px');
+    // $("body").css('padding', '20px');
     $('title').html(myWidget.name);
 
 } /*end_test*/ );
 
 // This is the main definition of your widget. Give it a unique name.
-cpdefine("inline:com-chilipeppr-widget-template", ["chilipeppr_ready", /* other dependencies here */ ], function() {
+cpdefine("inline:com-chilipeppr-widget-inlineeditor", ["chilipeppr_ready", "aceAutoCompletion" ], function() {
     return {
         /**
          * The ID of the widget. You must define this and make it unique.
          */
-        id: "com-chilipeppr-widget-template", // Make the id the same as the cpdefine id
-        name: "Widget / Template", // The descriptive name of your widget.
-        desc: "This example widget gives you a framework for creating your own widget. Please change this description once you fork this template and create your own widget. Make sure to run runme.js every time you are done editing your code so you can regenerate your README.md file, regenerate your auto-generated-widget.html, and automatically push your changes to Github.", // A description of what your widget does
+        id: "com-chilipeppr-widget-inlineeditor", // Make the id the same as the cpdefine id
+        name: "Widget / inlineeditor", // The descriptive name of your widget.
+        desc: "This example widget gives you a framework for creating your own widget. Please change this description once you fork this inlineeditor and create your own widget. Make sure to run runme.js every time you are done editing your code so you can regenerate your README.md file, regenerate your auto-generated-widget.html, and automatically push your changes to Github.", // A description of what your widget does
         url: "(auto fill by runme.js)",       // The final URL of the working widget as a single HTML file with CSS and Javascript inlined. You can let runme.js auto fill this if you are using Cloud9.
         fiddleurl: "(auto fill by runme.js)", // The edit URL. This can be auto-filled by runme.js in Cloud9 if you'd like, or just define it on your own to help people know where they can edit/fork your widget
         githuburl: "(auto fill by runme.js)", // The backing github repo
@@ -133,11 +146,146 @@ cpdefine("inline:com-chilipeppr-widget-template", ["chilipeppr_ready", /* other 
         init: function() {
             console.log("I am being initted. Thanks.");
 
+            
             this.setupUiFromLocalStorage();
             this.btnSetup();
             this.forkSetup();
+            var that = this;
+            setTimeout(function() {
+                that.initAceEditor();
+            }, 1000);
+            
 
             console.log("I am done being initted.");
+        },
+        initAceEditor: function() {
+            var sampleContent = `<div id="SprintCallCenterWidget" class="widget">
+    <div class="panel">
+        <div class="panel-heading">
+            Sprint Call Center
+        </div>
+        <div class="panel-body">
+        </div>
+    </div>
+</div>
+`;
+             this.loadAce("aceeditor-html", sampleContent, "ace/mode/html");
+             this.loadAce("aceeditor-css", "#SprintCallCenterWidget {\n}", "ace/mode/css");
+             var sampleContent = `class SprintCallCenterWidget extends Zipwhip.Widget {
+    constructor(props) {
+        super(props);
+    }
+    
+    onActivate() {
+        
+    }
+    
+    onDeactivate() {
+        
+    }
+    
+    onExpand() {
+        
+    }
+    
+    onCollapse() {
+        
+    }
+}
+`;
+             this.loadAce("aceeditor-javascript", sampleContent, "ace/mode/javascript");
+        },
+        aceCurrentSessionName: null,
+        aceCurrentSession: null,
+        aceEditors: [],
+        aceSessions: [],
+        aceIsLoaded: [],
+        loadAce: function(aceid, sampleContent, aceMode) {
+
+            // debugger;
+            console.log("trying to get ace. ace:"); //, ace, " aceId:", this.aceId);
+            //require("ace/mode/text_highlight_rules", function(xace) {
+            if ('ace' in window && ace) { // && 'setValue' in ace) {
+                console.log("got ace. ace:", ace);
+                
+                if (this.aceIsLoaded[aceid]) {
+                    console.log("You are asking Ace to load a 2nd time, but we are already loaded.");
+                    //return;
+                } else { 
+                    // load ace
+                    var editor = ace.edit(aceid);
+                    editor.setTheme("ace/theme/monokai");
+                    //document.getElementById('editor').style.fontSize='13px';
+                    this.aceEditors[aceid] = editor;
+                    //this.setScriptFromTemporaryFile();
+                    
+                    editor.commands.addCommand({
+                        name: 'mySave',
+                        bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
+                        exec: this.fileLocalSave.bind(this),
+                        readOnly: false // false if this command should not apply in readOnly mode
+                    });
+                    
+                    editor.setOptions({
+                        enableBasicAutocompletion: true,
+                        enableSnippets: true,
+                        enableLiveAutocompletion: true
+                    });
+                    
+                    editor.on("changeSession", function(e) {
+                        console.log("got editor changeSession");
+                    });
+                    
+                    //this.resize();
+                    this.aceIsLoaded[aceid] = true;
+                }
+                // debugger;
+                // now create the session just for this document
+                //var docu = ace.createEditSession('', "ace/mode/lua");
+                
+                // see if we have a session already for this
+                if (aceid in this.aceSessions) {
+                    // we actually already have a session, cool
+                    this.aceCurrentSession = this.aceSessions[this.aceSessionName];
+                    
+                } else {
+                    // we don't have a session, so need to create one
+                    if (sampleContent == null) sampleContent = "";
+                    this.aceCurrentSession = new ace.EditSession(sampleContent, aceMode)
+                    this.aceSessions[aceid] = this.aceCurrentSession;
+                    
+                }
+
+                this.aceEditors[aceid].setSession(this.aceCurrentSession);
+                //editor.getSession().setMode("ace/mode/lua");
+                this.aceEditors[aceid].getSession().setTabSize(2);
+                this.aceEditors[aceid].getSession().setUseSoftTabs(true);
+                //this.editor.getSession().setUseWrapMode(true);
+                this.aceEditors[aceid].getSession().setUndoManager(new ace.UndoManager());
+                
+                /*
+                this.editor.getSession().on('change', function(e) {
+                    // e.type, etc
+                    console.log("got change on editor. e:", e);
+                });
+                
+                this.editor.getSession().selection.on('changeSelection', function(e) {
+                    console.log("got changeSelection on editor. e:", e); 
+                });
+                */
+                
+                console.log("ace session created:", this.aceCurrentSession);
+
+            } else {
+                console.log("ace is currently undefined so retry later");
+                setTimeout(this.loadAce.bind(this), 1000);
+            }
+            
+            
+         
+        },
+        fileLocalSave: function(event) {
+            console.log("got fileLocalSave. event:", event);    
         },
         /**
          * Call this method from init to setup all the buttons when this widget

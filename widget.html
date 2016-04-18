@@ -32,7 +32,7 @@
 </head>
 
 <body>
-    <div id="com-chilipeppr-widget-template" class="panel panel-default">
+    <div id="com-chilipeppr-widget-inlineeditor" class="panel panel-default">
         <div class="panel-heading ">
 
             <div class="btn-toolbar pull-right" role="toolbar">
@@ -51,38 +51,234 @@
                         <ul class="dropdown-menu dropdown-menu-right" role="menu"></ul>
                     </div>
                 </div>
-            </div> <span class="panel-title" data-toggle="popover">Template Widget</span> <span style="font-size:9px;" class="fb-build">v1</span>
+            </div> 
+            
+            <span class="panel-title">
+                <div class="logo">
+                    <!--<a href="/" class="logo"></a>-->
+                </div>
+                <div class="title-words">Inline Editor</div>
+            </span>
 
         </div>
         <div class="panel-body">
-            <!-- Nav tabs -->
-            <ul class="nav nav-tabs" role="tablist">
-                <li class="active"><a href="#com-chilipeppr-widget-template-tab1" role="tab" data-toggle="tab">Tab 1</a>
-                </li>
-                <li><a href="#com-chilipeppr-widget-template-tab2" role="tab" data-toggle="tab">Tab 2</a></li>
-                <li><a href="#com-chilipeppr-widget-template-tab3" role="tab" data-toggle="tab">Tab 3</a></li>
-            </ul>
-            <!-- Tab panes -->
-
-            <div class="tab-content">
+            
+            <div class="sidebar">
+                
+                <p>Widget ID</p>
+                <input type="text" class="form-control" placeholder="yourorg-appid" value="SprintCallCenter"></input>
+                
+                <p>Widget Name</p>
+                <input type="text" class="form-control" value="Sprint Call Center"></input>
+                
+                <p>Widget Description</p>
+                <textarea class="form-control" rows="2">This widget adds the features required by Sprint to run toll free texting in their call center.</textarea>
+                    
+                <p>Private/Public</p>
+                <select class="form-control snippet-frontend-event">
+                    <option>Public</option>
+                    <option>Private This Account</option>
+                    <option>Private This Org</option>
+                </select>
+                
+                <p>Widget Image</p>
+                <input type="file">
+                
+                &nbsp;
+                
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="active"><a href="#com-chilipeppr-widget-inlineeditor-tab1" role="tab" data-toggle="tab">
+                        Frontend
+                    </a></li>
+                    <li><a href="#com-chilipeppr-widget-inlineeditor-tab2" role="tab" data-toggle="tab">
+                        Backend
+                    </a></li>
+                </ul>
+                <!-- Tab panes -->
     
-                <!-- Tab 1 -->
-                <div class="tab-pane active" id="com-chilipeppr-widget-template-tab1">
-                    <p>This is the content of tab 1.</p>
-                    <div class="">
-                        <button type="button" class="btn btn-xs btn-default btn-helloworld2" style="margin: 4px 0;">Hello World 2</button>
+                <div class="tab-content">
+        
+                        
+                        
+                    <!-- Tab 1 -->
+                    <div class="tab-pane active" id="com-chilipeppr-widget-inlineeditor-tab1">
+                
+                        <p>UI Location</p>
+                        <p style="font-size:9px;xline-heigh:9px;margin-bottom:4px;">All widgets will appear in the sidebar unless hidden. However, an app can attach UI to any element in the main UI once loaded.</p>
+                        <select class="form-control snippet-frontend-event">
+                            <option>In Sidebar</option>
+                            <option>Hidden</option>
+                        </select>
+                
+                        <p>Insert Subscribe Event Snippet</p>
+                        <select class="form-control snippet-frontend-event">
+                            <option>onLoadZipwhipBefore</option>
+                            <option>onLoadZipwhip</option>
+                            <option>onInitApp</option>
+                            <option>onActivateApp</option>
+                            <option>onDeactivateApp</option>
+                            <option>onTextIncoming</option>
+                            <option>onTextBeforeOutgoing</option>
+                            <option>onTextOutgoing</option>
+                            <option>onTextBeforeMarkAsRead</option>
+                            <option>onTextMarkAsRead</option>
+                            <option>onTextBeforeMarkAsUnread</option>
+                            <option>onTextMarkAsUnread</option>
+                            <option>onTextMouesover</option>
+                            <option>onTextMouseout</option>
+                            <option>onTextDelete</option>
+                            <option>onTextSelect</option>
+                            <option>onTextClick</option>
+                            <option>onTextDoubleClick</option>
+                            <option>onConversationOpen</option>
+                            <option>onConversationOpenInNewWindow</option>
+                            <option>onConversationDelete</option>
+                            <option>onContactNameBeforeEdit</option>
+                            <option>onContactNameEdit</option>
+                            <option>onCompose</option>
+                            <option>onComposeKeypress</option>
+                            <option>onComposeDragDropped</option>
+                            <option>onComposeOverCharacterLimit</option>
+                        </select>
+                        
+                        <p>Your Publish Events</p>
+                        <form class="form-inline xform-horizontal">
+                          <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" class="form-control" style="width:70%;" placeholder="yourorg-appid" value="sprint-callcenter-myevent"></input>
+                                <button type="submit" class="btn btn-primary" style="float:right;">Create</button>
+                                <span class="glyphicon glyphicon-trash"></span> sprint-callcenter-oncrmlookup<br>
+                                <span class="glyphicon glyphicon-trash"></span> sprint-callcenter-oncrmput<br>
+                            </div>
+                          </div>
+                          
+                        </form>
+                        &nbsp;
+                        
+                        <p>Insert UI Element</p>
+                        <select class="form-control snippet-frontend-ui">
+                            <option>Contact Card</option>
+                            <option>Conversation Card</option>
+                            <option>Panel</option>
+                            <option>Well</option>
+                            <option>Container</option>
+                            <option>Button</option>
+                            <option>Button Group</option>
+                            <option>Dropdown</option>
+                            <option>Menu Item</option>
+                            <option>Overlay Modal</option>
+                            <option>Overlay Tooltip</option>
+                            <option>Overlay Popover</option>
+                            <option>Breadcrumbs</option>
+                            <option>Tabs</option>
+                            <option>Pagination</option>
+                            <option>Pager</option>
+                            <option>Grid</option>
+                            <option>List Group</option>
+                            <option>Tables</option>
+                            <option>Input Text</option>
+                            <option>Input Textarea</option>
+                            <option>Input Select</option>
+                            <option>Input Multi-Select</option>
+                            <option>Input Checkbox</option>
+                            <option>Input Radio</option>
+                            <option>Glyphicon</option>
+                            <option>Label</option>
+                            <option>Badge</option>
+                            <option>Alert</option>
+                            <option>Closeable Alert</option>
+                            <option>Progress Bar</option>
+                        </select>
+                        
+                        <p>Insert Database Call Snippet</p>
+                        <select class="form-control snippet-frontend-ui">
+                            <option>Insert Data</option>
+                            <option>Find or Query Data</option>
+                            <option>Update Data</option>
+                            <option>Remove Data</option>
+                            <option>Aggregate Data</option>
+                        </select>
+                        
+                        
+                        
+                    </div> <!-- end tab -->
+                    
+                    <!-- Tab 2 -->
+                    <div class="tab-pane" id="com-chilipeppr-widget-inlineeditor-tab2">
+                        
+                        <p>Insert Event Snippet</p>
+                        <select class="form-control snippet-backend">
+                            <option>onTextIncoming</option>
+                            <option>onTextOutgoing</option>
+                            <option>onTextMarkAsRead</option>
+                            <option>onTextMarkAsUnread</option>
+                            <option>onTextDelete</option>
+                            <option>onConversationUpdate</option>
+                            <option>onConversationDelete</option>
+                            <option>onContactEdit</option>
+                        </select>
+
+                        <p>Insert Database Call Snippet</p>
+                        <select class="form-control snippet-frontend-ui">
+                            <option>Insert Data</option>
+                            <option>Find or Query Data</option>
+                            <option>Update Data</option>
+                            <option>Remove Data</option>
+                            <option>Aggregate Data</option>
+                        </select>
+                        
+                    </div> <!-- end tab -->
+                    
+                </div> <!-- end tab content -->
+                
+            </div> <!-- end sidebar -->
+            <div class="content" style="xheight: 400px; opacity: 1;">
+          
+         
+                <fieldset class="column left" style="width: 55%;">
+                    
+                    <div class="window top" id="panel_html" data-panel_type="html" style="height: 23.7248%;">
+                        <div id="aceeditor-html" class="aceeditor"></div>
+                        <a href="#" class="windowLabel" data-panel="html">
+                          <span class="xlabel">HTML</span><i class="bts bt-gear"></i>
+                        </a>
                     </div>
-                </div>
+                    
+                    <div class="handler handler_horizontal" style="top: 201px;"></div>
+                  
+                    <div class="window bottom" id="panel_js" data-panel_type="js" style="height: 76.2752%;">
+                        <div id="aceeditor-javascript" class="aceeditor"></div>
+                        <a href="#" class="windowLabel" data-panel="js">
+                          <span class="xlabel">JavaScript</span><i class="bts bt-gear"></i>
+                        </a>
+                    </div>
+                    
+                </fieldset>
+                
+                <div class="handler handler_vertical" style="left: 428px;"></div>
+                
+                <fieldset class="column right" style="width: 45%;">
 
-                <!-- Tab 2 -->
-                <div class="tab-pane" id="com-chilipeppr-widget-template-tab2">
-                    <p>This is the content of tab 2.</p>
-                </div>
+                    <div class="window top" id="panel_css" data-panel_type="css" style="height: 26.809%;">
+                        <div id="aceeditor-css" class="aceeditor"></div>
+                        <a href="#" class="windowLabel" data-panel="css">
+                          <span class="xlabel">CSS</span><i class="bts bt-gear"></i>
+                        </a>
+                    </div>
 
-                <!-- Tab 3 -->
-                <div class="tab-pane" id="com-chilipeppr-widget-template-tab3">
-                    <p>This is the content of tab 3.</p>
-                </div>
+                    <div class="handler handler_horizontal" style="top: 227px;"></div>
+
+                    <div id="result" class="window bottom" style="height: 73.191%;">
+                        <iframe name="result" sandbox="allow-forms allow-popups allow-scripts allow-same-origin allow-modals" frameborder="0"></iframe>
+                    
+                        <span class="windowLabel">Result</span>
+                    
+                    </div>
+
+                </fieldset>
+
+
 
             </div>
 
