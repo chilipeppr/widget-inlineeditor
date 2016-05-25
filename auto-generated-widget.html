@@ -268,6 +268,7 @@ requirejs.config({
         AceEditorHtml: '//cdn.jsdelivr.net/ace/1.2.3/min/mode-html',
         AceEditorJavascript: '//cdn.jsdelivr.net/ace/1.2.3/min/mode-javascript',
         AceEditorJsx: '//cdn.jsdelivr.net/ace/1.2.3/min/mode-jsx',
+        AceLangTools: 'https://rawgithub.com/ajaxorg/ace-builds/master/src/ext-language_tools',
     },
     shim: {
         // See require.js docs for how to define dependencies that
@@ -277,7 +278,8 @@ requirejs.config({
         AceEditorHtml: ["ace"],
         AceEditorJavascript: ["ace"],
         AceEditorJsx: ["ace"],
-        aceAutoCompletion: ["ace", "AceEditorHtml", "AceEditorCss", "AceEditorJavascript", "AceEditorJsx"]
+        AceLangTools: ["ace"],
+        aceAutoCompletion: ["ace", "AceEditorHtml", "AceEditorCss", "AceEditorJavascript", "AceEditorJsx", 'AceLangTools'],
     }
 });
 
@@ -746,12 +748,36 @@ require(['MyNewWidget'], function(MyNewWidget) {
                         enableLiveAutocompletion: true
                     });
                     
+                    
                     editor.on("changeSession", function(e) {
                         console.log("got editor changeSession");
                     });
                     
                     //this.resize();
                     this.aceIsLoaded[aceid] = true;
+                    
+                    // set our own auto-completion
+                    var langTools = ace.require("ace/ext/language_tools");
+                    var zipwhipCompleter = {
+                        getCompletions: function(editor, session, pos, prefix, callback) {
+                            var range = editor.getSelectionRange();
+                            console.log("getCompletions called. pos:", pos, "prefix:", prefix, "range:", range, "editor:", editor, "session:", session);
+                            // see if preceding characters are Zipwhip
+                            // range.end = pos;
+                            // range.start.
+                            // if (prefix.length === 0) { callback(null, []); return }
+                            // $.getJSON(
+                            //     "http://rhymebrain.com/talk?function=getRhymes&word=" + prefix,
+                            //     function(wordList) {
+                            //         // wordList like [{"word":"flow","freq":24,"score":300,"flags":"bc","syllables":"1"}]
+                            //         callback(null, wordList.map(function(ea) {
+                            //             return {name: ea.word, value: ea.word, score: ea.score, meta: "rhyme"}
+                            //         }));
+                            //     })
+                        }
+                    }
+                    langTools.addCompleter(zipwhipCompleter);
+                    
                 }
                 // debugger;
                 // now create the session just for this document
