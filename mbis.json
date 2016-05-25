@@ -1,0 +1,10 @@
+{
+    "enterpriseId": "vendorId-jlauer"
+    "displayName": "Johnny Lau Lau",
+    "logoAvatar": "http://science-all.com/images/monkey/monkey-07.jpg",
+    "hdrColor": "#0000ff",
+    "bkgrdColor": "#ddddff",
+    "logoAction": {
+        "enterpriseHopmepageUrl": "www.zipwhip.com"
+    }
+}

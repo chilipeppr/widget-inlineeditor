@@ -35,14 +35,22 @@
     <div id="com-chilipeppr-widget-inlineeditor" class="panel panel-default">
         <div class="panel-heading ">
 
-
             
             
             <div class="btn-toolbar pull-right" style="margin-top:4px;" role="toolbar">
                 <div class="btn-group">
-                    <button type="button" class="btn btn-xs btn-default btn-sayhello" data-delay="1000" data-animation="true" data-placement="auto" data-container="body" data-trigger="hover" data-title="Say Hello" data-content="Generate a hello message">Say Hello
+                    <span style="color:white;">Logged In As</span> 
+                </div>
+                <div class="btn-group">
+                    
+                    <button type="button" class="btn btn-xs btn-default btn-loggedin" 
+                    data-delay="1000" data-animation="true" data-placement="auto" 
+                    data-container="body" data-trigger="hover" data-title="Say Hello" 
+                    data-content="Generate a hello message">
+                        jlauer@zipwhip.com
                     </button>
                 </div>
+
                 <div class="btn-group">
                     <button type="button" class="btn btn-xs btn-default hidebody"><span class="glyphicon glyphicon-chevron-up"></span>
                     </button>
@@ -59,32 +67,37 @@
             <span class="panel-title">
                 <div class="logo">
                     <!--<a href="/" class="logo"></a>-->
+                    <!--<img src="http://www.chilipeppr.com/img/chilipeppr_logo.png" style="max-height:22px;padding-right:3px;">-->
+                    <!--<span xstyle="color:white;">ChiliPeppr</span>-->
                 </div>
                 <div class="title-words">Inline Editor</div>
                 
+                <a href="widget.html" class="title-words" style="color:white;padding:0 10px 0 20px;;">New</a>
+                
                 <div class="btn-toolbar" style="" role="toolbar">
-                    <div class="btn-group" style="padding-left:10px;margin-top:4px;">
-                        <button type="button" class="btn btn-xs btn-default btn-sayhello" 
+                    
+                    <div class="btn-group" style="padding-left:10px;margin-top:0px;">
+                        <button type="button" class="btn xbtn-xs btn-default btn-run" 
                         data-delay="1000" data-animation="true" data-placement="auto" data-container="body" 
                         data-trigger="hover" data-title="Say Hello" data-content="Generate a hello message">
                             Run
                         </button>
-                        <button type="button" class="btn btn-xs btn-default btn-sayhello" 
+                        <button type="button" class="btn xbtn-xs btn-default btn-save" 
                         data-delay="1000" data-animation="true" data-placement="auto" data-container="body" 
-                        data-trigger="hover" data-title="Say Hello" data-content="Generate a hello message">
+                        data-trigger="hover" data-title="Save" data-content="Generate a hello message">
                             Save
                         </button>
-                        <button type="button" class="btn btn-xs btn-default btn-sayhello" 
+                        <button type="button" class="btn xbtn-xs btn-default btn-fork" 
                         data-delay="1000" data-animation="true" data-placement="auto" data-container="body" 
                         data-trigger="hover" data-title="Say Hello" data-content="Generate a hello message">
                             Fork
                         </button>
-                        <button type="button" class="btn btn-xs btn-default btn-sayhello" 
+                        <button type="button" class="btn xbtn-xs btn-default btn-setasbase" 
                         data-delay="1000" data-animation="true" data-placement="auto" data-container="body" 
                         data-trigger="hover" data-title="Say Hello" data-content="Generate a hello message">
                             Set as Base
                         </button>
-                        <button type="button" class="btn btn-xs btn-default btn-sayhello" 
+                        <button type="button" class="btn xbtn-xs btn-default btn-embed" 
                         data-delay="1000" data-animation="true" data-placement="auto" data-container="body" 
                         data-trigger="hover" data-title="Say Hello" data-content="Generate a hello message">
                             Embed
@@ -96,22 +109,37 @@
         </div>
         <div class="panel-body">
             
+            <div class="vertical-buttons">
+                <button class="btn btn-xs btn-primary btn-vertical btn-showyourwidgets" style="">Your Widgets</button>    
+            </div>
+            
+            <div class="repo-sidebar hidden">
+                
+                <p>Your Widgets</p>
+                
+                <ul class="repo-list">
+                <li><a href="">JohnSidebarWidget</a></li>
+                <li><a href="">VerizonMbis</a></li>
+                </ul>
+            </div>
+            
             <div class="sidebar">
                 
                 <p>Widget ID</p>
-                <input type="text" class="form-control" placeholder="yourorg-appid" value="SprintCallCenter"></input>
+                <input type="hidden" class="codeRepoId" value="insert-original-coderepo-id-here">
+                <input type="text" class="form-control input-id" placeholder="YourWidgetId" value="MyNewWidget"></input>
                 
                 <p>Widget Name</p>
-                <input type="text" class="form-control" value="Sprint Call Center"></input>
+                <input type="text" class="form-control input-name" value="My New Widget"></input>
                 
                 <p>Widget Description</p>
-                <textarea class="form-control" rows="2">This widget adds the features required by Sprint to run toll free texting in their call center.</textarea>
+                <textarea class="form-control input-desc" rows="2"></textarea>
                     
                 <p>Private/Public</p>
-                <select class="form-control snippet-frontend-event">
-                    <option>Public</option>
-                    <option>Private This Account</option>
-                    <option>Private This Org</option>
+                <select class="form-control snippet-frontend-event select-pubpriv">
+                    <option value="public">Public</option>
+                    <option value="privacct">Private This Account</option>
+                    <option value="privorg">Private This Org</option>
                 </select>
                 
                 <p>Widget Image</p>
@@ -266,52 +294,159 @@
                 </div> <!-- end tab content -->
                 
             </div> <!-- end sidebar -->
-            <div class="content" style="xheight: 400px; opacity: 1;">
-          
-         
-                <fieldset class="column left" style="width: 55%;">
-                    
-                    <div class="window top" id="panel_html" data-panel_type="html" style="height: 23.7248%;">
-                        <div id="aceeditor-html" class="aceeditor"></div>
-                        <a href="#" class="windowLabel" data-panel="html">
-                          <span class="xlabel">HTML</span><i class="bts bt-gear"></i>
-                        </a>
-                    </div>
-                    
-                    <div class="handler handler_horizontal" style="top: 201px;"></div>
-                  
-                    <div class="window bottom" id="panel_js" data-panel_type="js" style="height: 76.2752%;">
-                        <div id="aceeditor-javascript" class="aceeditor"></div>
-                        <a href="#" class="windowLabel" data-panel="js">
-                          <span class="xlabel">JavaScript</span><i class="bts bt-gear"></i>
-                        </a>
-                    </div>
-                    
-                </fieldset>
+            <div class="content main-body" style="xheight: 400px; opacity: 1;">
                 
-                <div class="handler handler_vertical" style="left: 428px;"></div>
-                
-                <fieldset class="column right" style="width: 45%;">
-
-                    <div class="window top" id="panel_css" data-panel_type="css" style="height: 26.809%;">
-                        <div id="aceeditor-css" class="aceeditor"></div>
-                        <a href="#" class="windowLabel" data-panel="css">
-                          <span class="xlabel">CSS</span><i class="bts bt-gear"></i>
+                <!-- Javascript Editor. Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="active">
+                        <a href="#com-chilipeppr-widget-inlineeditor-jscript-tab1" role="tab" data-toggle="tab">
+                        Frontend
                         </a>
-                    </div>
-
-                    <div class="handler handler_horizontal" style="top: 227px;"></div>
-
-                    <div id="result" class="window bottom" style="height: 73.191%;">
-                        <iframe name="result" sandbox="allow-forms allow-popups allow-scripts allow-same-origin allow-modals" frameborder="0"></iframe>
+                    </li>
+                    <li class="xactive">
+                        <a href="#com-chilipeppr-widget-inlineeditor-jscript-tabtranspile" role="tab" data-toggle="tab">
+                        Frontend Transpiled
+                        </a>
+                    </li>
+                    <li class="xactive">
+                        <a href="#com-chilipeppr-widget-inlineeditor-jscript-tabtranspileexample" role="tab" data-toggle="tab">
+                        Frontend Example Transpiled
+                        </a>
+                    </li>
+                    <li class="xactive">
+                        <a href="#com-chilipeppr-widget-inlineeditor-jscript-tab2" role="tab" data-toggle="tab">
+                        Backend
+                        </a>
+                    </li>
+                    <li class="xactive">
+                        <a href="#com-chilipeppr-widget-inlineeditor-jscript-tabexample" role="tab" data-toggle="tab">
+                        Example Snippet
+                        </a>
+                    </li>
+                    <li class="xactive">
+                        <a href="#com-chilipeppr-widget-inlineeditor-jscript-tab3" role="tab" data-toggle="tab">
+                        Unit Tests
+                        </a>
+                    </li>
                     
-                        <span class="windowLabel">Result</span>
-                    
+                    <li class="xactive">
+                        <a href="#com-chilipeppr-widget-inlineeditor-jscript-tab5" role="tab" data-toggle="tab">
+                        Docs
+                        </a>
+                    </li>
+                </ul>
+                <!-- Javascript. Tab panes -->
+                
+                <div class="tab-content">
+                
+                    <!-- Javscript. Tab Javscript / HTML / CSS / Iframe -->
+                    <div class="tab-pane active" id="com-chilipeppr-widget-inlineeditor-jscript-tab1">
+              
+                        <div class="url-available">
+                            Avaialble at <span class="url-available-frontend"><a href="http://app.zipwhip.com/MyNewWidget/frontend">http://app.zipwhip.com/MyNewWidget/frontend</a></span>
+                        </div>
+                        
+                        <fieldset class="column left" style="width: 55%;">
+                            
+                            <div class="window top" id="panel_html" data-panel_type="html" style="height: 23%">
+                                <div id="aceeditor-example" class="aceeditor"></div>
+                                <a href="#" class="windowLabel" data-panel="html">
+                                  <span class="xlabel">Example JavaScript</span><i class="bts bt-gear"></i>
+                                </a>
+                            </div>
+                            
+                            <div class="hidden handler handler_horizontal" style="top: 201px;"></div>
+                          
+                            <div class="window bottom" id="panel_js" data-panel_type="js" style="height: 77%;">
+                              
+                                <div id="aceeditor-javascript" class="aceeditor"></div>
+                                <a href="#" class="windowLabel" data-panel="js">
+                                  <span class="xlabel">JavaScript</span><i class="bts bt-gear"></i>
+                                </a>
+                        
+                                    
+                            
+                            </div> 
+                        </fieldset>
+                        
+                        <div class="handler handler_vertical" style="left: 428px;"></div>
+                        
+                        <fieldset class="column right" style="width: 45%;">
+        
+                            <div class="window top" id="panel_html" data-panel_type="html" style="height: 20%;">
+                                <div id="aceeditor-html" class="aceeditor"></div>
+                                <a href="#" class="windowLabel" data-panel="html">
+                                  <span class="xlabel">HTML</span><i class="bts bt-gear"></i>
+                                </a>
+                            </div>
+                            
+                            <div class="window top" id="panel_css" data-panel_type="css" style="top:20%;height: 20%;">
+                                <div id="aceeditor-css" class="aceeditor"></div>
+                                <a href="#" class="windowLabel" data-panel="css">
+                                  <span class="xlabel">CSS</span><i class="bts bt-gear"></i>
+                                </a>
+                            </div>
+        
+                            <div class="hidden handler handler_horizontal" style="top: 227px;"></div>
+        
+                            <div id="result" class="window bottom" style="height: 60%;">
+                                <iframe id="main-iframe" name="result" sandbox="allow-forms allow-popups allow-scripts allow-same-origin allow-modals" frameborder="0"></iframe>
+                            
+                                <span class="hidden windowLabel">Result</span>
+                            
+                            </div>
+        
+                        </fieldset>
+
                     </div>
+                         
+                    <!-- Javscript. Tab Transpiled -->
+                    <div class="tab-pane xactive" id="com-chilipeppr-widget-inlineeditor-jscript-tabtranspile">
+                        <div class="url-available " xstyle="float:left;">
+                            Avaialble at <span class="url-available-frontend"><a href="http://app.zipwhip.com/MyNewWidget/frontend">http://app.zipwhip.com/MyNewWidget/frontend</a></span>
+                        <button xstyle="float:left;" class="btn btn-xs btn-default btn-transpilesave">Override Save Transpiled</button>
+                        </div>
+                        
 
-                </fieldset>
+                        <div id="aceeditor-transpiledjs" class="aceeditor"></div>
+                    </div>
+                    
+                    <!-- Javscript. Tab Transpiled Example -->
+                    <div class="tab-pane xactive" id="com-chilipeppr-widget-inlineeditor-jscript-tabtranspileexample">
+                        <div class="url-available " xstyle="float:left;">
+                            Avaialble at <span class="url-available-frontendexample"><a href="http://app.zipwhip.com/MyNewWidget/frontend">http://app.zipwhip.com/MyNewWidget/frontendexample</a></span>
+                        <button xstyle="float:left;" class="btn btn-xs btn-default btn-transpileexamplesave">Override Save Transpiled</button>
+                        </div>
+                        
 
+                        <div id="aceeditor-transpiledexamplejs" class="aceeditor"></div>
+                    </div>
+                    
+                    <!-- Javscript. Tab 2. Backend. -->
+                    <div class="tab-pane xactive" id="com-chilipeppr-widget-inlineeditor-jscript-tab2">
+                        <div class="url-available">
+                            Avaialble at <span class="url-available-backend"><a href="http://app.zipwhip.com/MyNewWidget/backend">http://app.zipwhip.com/MyNewWidget/backend</a></span>
+                        </div>
 
+                        <div id="aceeditor-backendjs" class="aceeditor"></div>
+                    </div>
+                    
+                    <!-- Javscript. Tab Example. -->
+                    <div class="tab-pane xactive" id="com-chilipeppr-widget-inlineeditor-jscript-tabexample">
+                        
+                        <div id="aceeditor-example2" class="aceeditor"></div>
+                        
+                    </div>
+                    <!-- Javscript. Tab 3 -->
+                    <div class="tab-pane xactive" id="com-chilipeppr-widget-inlineeditor-jscript-tab3">
+                    </div>
+                    
+                    
+                    <!-- Javscript. Tab 5 -->
+                    <div class="tab-pane xactive" id="com-chilipeppr-widget-inlineeditor-jscript-tab5">
+                    </div>
+                    
+                </div><!-- end tab content -->
 
             </div>
 

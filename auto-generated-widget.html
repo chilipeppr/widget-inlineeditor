@@ -30,6 +30,8 @@ body,html {
 
 #com-chilipeppr-widget-inlineeditor .panel-heading {
     background-color: #3D444D;
+    /*color: #bebebe;*/
+    /*background-color: #f8f8f8;*/
     /*height:3.7em;*/
     height:55px;
 }
@@ -37,8 +39,10 @@ body,html {
     color:white;
     float:left;
     line-height: 2em;
+    /*color: #bebebe;*/
 }
 .logo {
+    /*color: #bebebe;*/
     float:left;
     height:2.05em;
     width:6.5em;
@@ -55,6 +59,18 @@ body,html {
     padding:0;
     margin:0;
 }
+.vertical-buttons {
+    position:absolute;
+    left:0;
+    width:24px;
+    top:55px;
+}
+.repo-sidebar {
+    position: absolute;
+    left:24px;
+    top:55px;
+    padding:10px;
+}
 .sidebar {
     padding: 16px;
     margin: 0;
@@ -62,11 +78,13 @@ body,html {
     width: 260px;
     position: absolute;
     top: 55px;
-    left: 0;
+    /*left: 30px;*/
+    left:24px;
     border-right: solid 1px #e9eced;
     /*height: 100%; */
     height: calc(100vh - 85px);
     background: #eee;
+    overflow: auto;
 }
 .sidebar p {
     padding:0;
@@ -80,15 +98,19 @@ body,html {
 }
 .content {
     margin:0;
-    margin-left: 260px;
+    margin-left: 284px;
     position: relative;
     /*margin: 0;*/
     padding: 0;
     height: calc(100vh - 85px);
 }
+.url-available {
+    padding:6px 10px;
+    height:30px;
+}
 fieldset.column {
     display: block;
-    height: 100%;
+    height: 92%;
 }
 .content .left {
     position: absolute;
@@ -109,6 +131,7 @@ fieldset.column {
 }
 .content .window {
     width: 100%;
+    
 }
 .content .bottom, .content .top {
     border-right: solid 1px #cfd6d9;
@@ -185,11 +208,30 @@ fieldset.column {
 .aceeditor {
     height:100%;
 }
+#result iframe {
+    min-width: 100px;
+    width: 100%;
+    height: 100%;
+}
+.main-body .tab-content {
+    height:100%;
+}
+.main-body .tab-pane {
+    height:100%;
+}
+.repo-list {
+    list-style-type: none;
+    padding-left: 0px;
+}
+.btn-vertical {
+    transform-origin: center top;
+    transform: translateX(-50%) translateY(200%) rotate(-90deg);
+}
     </style>
 
     <script type='text/javascript'>
     //<![CDATA[
-/* global requirejs cprequire cpdefine chilipeppr THREE */
+/* global $ requirejs cprequire cpdefine chilipeppr THREE */
 // Defining the globals above helps Cloud9 not show warnings for those variables
 
 // ChiliPeppr Widget/Element Javascript
@@ -225,6 +267,7 @@ requirejs.config({
         AceEditorCss: '//cdn.jsdelivr.net/ace/1.2.3/min/mode-css',
         AceEditorHtml: '//cdn.jsdelivr.net/ace/1.2.3/min/mode-html',
         AceEditorJavascript: '//cdn.jsdelivr.net/ace/1.2.3/min/mode-javascript',
+        AceEditorJsx: '//cdn.jsdelivr.net/ace/1.2.3/min/mode-jsx',
     },
     shim: {
         // See require.js docs for how to define dependencies that
@@ -233,7 +276,8 @@ requirejs.config({
         AceEditorCss: ["ace"],
         AceEditorHtml: ["ace"],
         AceEditorJavascript: ["ace"],
-        aceAutoCompletion: ["ace", "AceEditorHtml", "AceEditorCss", "AceEditorJavascript"]
+        AceEditorJsx: ["ace"],
+        aceAutoCompletion: ["ace", "AceEditorHtml", "AceEditorCss", "AceEditorJavascript", "AceEditorJsx"]
     }
 });
 
@@ -344,27 +388,259 @@ cpdefine("inline:com-chilipeppr-widget-inlineeditor", ["chilipeppr_ready", "aceA
             var that = this;
             setTimeout(function() {
                 that.initAceEditor();
-            }, 1000);
+            }, 500);
+            this.setupInfoAreaId();
+            this.pointIframeToFrontend();
+            this.updateLauncherUrls();
+            this.populateRepoSidebar();
             
-
             console.log("I am done being initted.");
         },
+        setupInfoAreaId: function() {
+            // set the ID of this widget if we have one
+            var repoid = this.getOrigCodeRepoId();
+            console.log("repoid:", repoid);
+            if (repoid) {
+                $('#' + this.id + " .input-id").val(repoid);
+                
+            } else {
+                $('#' + this.id + " .input-id").val("MyNewWidget");
+            
+            }
+        },
+        pointIframeToFrontend: function() {
+            console.log("pointIframeToFrontend");
+            var curLoc = window.location;
+            curLoc += "/frontend";
+            console.log("curLoc:", curLoc);
+            
+            var repoid = this.getOrigCodeRepoId();
+            console.log("repoid:", repoid);
+            if (repoid) {
+                console.log("will send iframe to:", curLoc);
+                // load iframe src
+                document.getElementById('main-iframe').contentWindow.location = curLoc;
+            } else {
+                // do nothing with iframe. maybe show ("not saved yet")
+            }
+            
+        },
+        updateLauncherUrls: function() {
+            // url-available-frontend
+            var repoid = this.getOrigCodeRepoId();
+            if (repoid) {
+                var url = window.location + "/frontend";
+                var urlbackend = window.location + "/backend";
+                $('.url-available-frontend').html('<a href="' + url + '">' + url + '</a>');
+                $('.url-available-backend').html('<a href="' + urlbackend + '">' + urlbackend + '</a>');
+            } else {
+                // do nothing with iframe. maybe show ("not saved yet")
+                $('.url-available-frontend').html('(Save your widget first)');
+                $('.url-available-backend').html('(Save your widget first)');
+            }
+        },
+        setupInfoArea: function(data) {
+            // set the ID of this widget if we have one
+            
+            if (data && 'info' in data) {
+                console.log("setting up info area on left side. data:", data);
+                var el = $('#' + this.id);
+                el.find('.input-name').val(data.info.name);
+                el.find('.input-desc').val(data.info.description);
+                document.title = data.id + " - " + data.info.name;
+            }
+        },
+        populateRepoSidebar: function() {
+            
+            $.ajax({
+                type: "GET",
+                url: "/repos",
+            })
+            .done(function(data) {
+                // console.log("done getting code repos");
+                // populate the list
+                // console.log("data from get code repos:", data);
+                var repoListEl = $('.repo-list');
+                repoListEl.empty();
+                data.forEach(function(item, i) {
+                    // console.log("repos item:", item);
+                    repoListEl.append($('<li><a href="/' + item.id + '">' + item.id + "</a></li>"));
+                })
+            })
+            .fail(function() {
+                console.log("failed getting code repo list");
+            });
+        },
+        showRepoSidebar: function() {
+            $('.main-body').css('margin-left', '450px');
+            $('.sidebar').css('left', '190px');
+            $('.repo-sidebar').removeClass('hidden');
+        },
+        hideRepoSidebar: function() {
+            $('.main-body').css('margin-left', '284px');
+            $('.sidebar').css('left', '24px');
+            $('.repo-sidebar').addClass('hidden');
+        },
+        toggleRepoSidebar: function() {
+            if ($('.repo-sidebar').hasClass('hidden')) {
+                // it's hidden, show it
+                this.showRepoSidebar();
+            } else {
+                this.hideRepoSidebar();
+            }
+        },
+        saveCodeRepoTranspiledOverride: function() {
+            console.log("saveCodeRepo. this:", this);
+            
+            // get main dom obj
+            var el = $('#' + this.id);
+            
+            // build up the POST from all the elements
+            var info = {
+                id: el.find('.input-id').val(),
+                user: el.find('.btn-loggedin').text().trim(),
+                transpiledjs: this.aceEditors["aceeditor-transpiledjs"].getSession().getValue(),
+            }
+            console.log("about to saveCodeRepoTranspiledOverride. info:", info);
+            
+            $.ajax({
+                type: "POST",
+                url: "/savetranspiled",
+                data: info,
+                // success: this.onSaveCodeRepoSuccess.bind(this),
+                // dataType: "json"
+            })
+            .done(function() {
+                console.log("done posting code");
+                
+                // this is good. now we need to redirect the page so we load our new
+                // url for our content
+                // window.location.replace("/" + info.id);
+                // reload the iframe
+                document.getElementById('main-iframe').contentWindow.location.reload();
+            })
+            .fail(function() {
+                console.log("failed posting code");
+            });
+        },
+        saveCodeRepo: function() {
+            console.log("saveCodeRepo. this:", this);
+            
+            // get main dom obj
+            var el = $('#' + this.id);
+            
+            console.log("user to save under:", el.find('.btn-loggedin').text());
+            
+            // build up the POST from all the elements
+            var info = {
+                id: el.find('.input-id').val(),
+                user: el.find('.btn-loggedin').text().trim(),
+                name: el.find('.input-name').val(),
+                description: el.find('.input-desc').val(),
+                html: this.aceEditors["aceeditor-html"].getSession().getValue(),
+                css: this.aceEditors["aceeditor-css"].getSession().getValue(),
+                js: this.aceEditors["aceeditor-javascript"].getSession().getValue(),
+                backendjs: this.aceEditors["aceeditor-backendjs"].getSession().getValue(),
+                examplejs: this.aceEditors["aceeditor-example"].getSession().getValue(),
+            }
+            if (info.name.length == 0) info.name = " ";
+            if (info.description.length == 0) info.description = " ";
+            console.log("about to saveCodeRepo. info:", info);
+            
+            $.ajax({
+                type: "POST",
+                url: "/save",
+                data: info,
+                // success: this.onSaveCodeRepoSuccess.bind(this),
+                // dataType: "json"
+            })
+            .done(function(response) {
+                console.log("done posting code. response:", response);
+                
+                alert(JSON.stringify(response));
+                
+                // this is good. now we need to redirect the page so we load our new
+                // url for our content
+                window.location.replace("/" + info.id);
+            })
+            .fail(function() {
+                console.log("failed posting code");
+            });
+            
+        },
+        getOrigCodeRepoId: function() {
+            // the way to determine this is if we have the hidden field called codeRepoId
+            // filled in with an id (we could also maybe analyze the url)
+            var origCodeRepoId = $('#' + this.id + " .codeRepoId").val();
+            console.log("origCodeRepoId:", origCodeRepoId);
+            if (origCodeRepoId && origCodeRepoId.match(/insert-original-coderepo-id-here/)) {
+                // there is no swapped in id, so this is a raw new load so show sample
+                return null;
+            } else {
+                return origCodeRepoId;
+            }
+        },
         initAceEditor: function() {
-            var sampleContent = `<div id="SprintCallCenterWidget" class="widget">
-    <div class="panel">
-        <div class="panel-heading">
-            Sprint Call Center
-        </div>
-        <div class="panel-body">
-        </div>
-    </div>
+            
+            // we need to see if we have data from the database or if we need
+            // to put sample data in
+            var origCodeRepoId = this.getOrigCodeRepoId();
+            
+            if (origCodeRepoId) {
+                // we have an id, get the data
+                var that = this;
+                $.getJSON("/get?id=" + origCodeRepoId, function(data) {
+                    console.log("got data back from /get. data:", data);
+                    if (data.success == true) {
+                        // we got the data. yeah!
+                        that.loadAce("aceeditor-html", data.info.html, "ace/mode/html");
+                        that.loadAce("aceeditor-css", data.info.css, "ace/mode/css");
+                        // that.loadAce("aceeditor-javascript", data.info.js, "ace/mode/javascript");
+                        that.loadAce("aceeditor-javascript", data.info.js, "ace/mode/jsx");
+                        that.loadAce("aceeditor-backendjs", data.info.backendjs ? data.info.backendjs : "// Backend JS", "ace/mode/javascript");
+                        that.loadAce("aceeditor-transpiledjs", data.info.transpiledjs ? data.info.transpiledjs : "// (Read-Only) Transpiled JS", "ace/mode/javascript"); 
+                        that.loadAce("aceeditor-example", data.info.examplejs ? data.info.examplejs : "// Example JS", "ace/mode/jsx"); 
+                        that.loadAce("aceeditor-transpiledexamplejs", data.info.transpiledexamplejs ? data.info.transpiledexamplejs : "// (Read-Only) Transpiled Example JS", "ace/mode/javascript"); 
+                        that.setupInfoArea(data);
+                    } else {
+                        // failed
+                        console.log("failed to get data. fallback to sample data???");
+                    }
+                });
+                
+            } else {
+                // load sample data
+                var sampleContent = `<div id="MyNewWidget" class="widget">
+    <div id="MyNewWidgetBody" class="panel-body"></div>
 </div>
 `;
-             this.loadAce("aceeditor-html", sampleContent, "ace/mode/html");
-             this.loadAce("aceeditor-css", "#SprintCallCenterWidget {\n}", "ace/mode/css");
-             var sampleContent = `class SprintCallCenterWidget extends Zipwhip.Widget {
+                this.loadAce("aceeditor-html", sampleContent, "ace/mode/html");
+                this.loadAce("aceeditor-css", "#MyNewWidget {\n}", "ace/mode/css");
+                var sampleContent = `// Frontend Javascript / JSX
+// Avaialble at http://app.zipwhip.com/MyNewWidget/frontend
+
+// imports Zipwhip from '//app.zipwhip.com/Zipwhip/frontend';
+
+class MyNewWidget { // extends Zipwhip.Widget {
+    
     constructor(props) {
-        super(props);
+        // super(props);
+        // import all ReactBootstrap objects
+        for (var i in ReactBootstrap) {
+          if (!i.match(/^_/)) window[i] = ReactBootstrap[i];
+        }
+    }
+    
+    init() {
+        const panelInstance = (
+            <Panel header="My New Widget">
+                Panel content
+            </Panel>
+        );
+        
+        var mountNode = document.getElementById('MyNewWidgetBody');
+        
+        ReactDOM.render(panelInstance, mountNode);
     }
     
     onActivate() {
@@ -383,14 +659,61 @@ cpdefine("inline:com-chilipeppr-widget-inlineeditor", ["chilipeppr_ready", "aceA
         
     }
 }
+var instance = new MyNewWidget();
+instance.init();
 `;
-             this.loadAce("aceeditor-javascript", sampleContent, "ace/mode/javascript");
+                this.loadAce("aceeditor-javascript", sampleContent, "ace/mode/jsx");
+                sampleContent = `// URL of this code is 
+// https://app.zipwhip.com/MyNewWidget/backend
+
+// Backend Javascript runs in Node.js sandbox
+// You must export a handler function. That function is called with (event, callback)
+// You must call the callback to end the incoming request. The format of the callback
+// is callback({contentType:'text/json', body:JSON.stringify(result)}); where 
+// contentType is any valid browser format and the body is a string. 
+
+module.exports = {
+  onHttpsRequest: function(event, callback) {
+    // console.log('Received event:', event);
+    console.log("onHttpsRequest. url:", event.req.url);
+    
+    var that = this;
+    var url = require('url');
+    var url_parts = url.parse(event.req.url, true);
+    var query = url_parts.query;
+    
+    var result = {};
+    
+    if ('getParam1' in query) {
+        console.log("getParam1 being processed.");
+    } else if ('getParam2' in query) {
+        console.log("getParam2 being processed.");
+    } else {
+        console.log("default query being processed");
+    }
+    
+    callback({contentType:'text/json', body:JSON.stringify(result)});
+    
+  },
+}
+`;
+                this.loadAce("aceeditor-backendjs", sampleContent, "ace/mode/javascript");
+                
+                sampleContent = `// This code executes first
+require(['MyNewWidget'], function(MyNewWidget) {
+  console.log("inside require callback");
+  var instance = new MyNewWidget();
+  instance.init();
+});                
+`;
+                this.loadAce("aceeditor-example", sampleContent, "ace/mode/jsx");
+            }
         },
         aceCurrentSessionName: null,
         aceCurrentSession: null,
-        aceEditors: [],
-        aceSessions: [],
-        aceIsLoaded: [],
+        aceEditors: {},
+        aceSessions: {},
+        aceIsLoaded: {},
         loadAce: function(aceid, sampleContent, aceMode) {
 
             // debugger;
@@ -469,7 +792,7 @@ cpdefine("inline:com-chilipeppr-widget-inlineeditor", ["chilipeppr_ready", "aceA
 
             } else {
                 console.log("ace is currently undefined so retry later");
-                setTimeout(this.loadAce.bind(this), 1000);
+                setTimeout(this.loadAce.bind(this), 100);
             }
             
             
@@ -485,6 +808,20 @@ cpdefine("inline:com-chilipeppr-widget-inlineeditor", ["chilipeppr_ready", "aceA
          * the entire DOM of the widget.
          */
         btnSetup: function() {
+
+            // toggle repos button
+            $('#' + this.id + ' .btn-showyourwidgets').click(this.toggleRepoSidebar.bind(this));
+            
+            // save button
+            $('#' + this.id + ' .btn-save').click(this.saveCodeRepo.bind(this));
+            
+            // save override transpiled
+            $('#' + this.id + ' .btn-transpilesave').click(this.saveCodeRepoTranspiledOverride.bind(this));
+
+            // new button
+            $('#' + this.id + ' .btn-new').click(function() {
+                window.location.href = "widget.html";
+            });
 
             // Chevron hide/show body
             var that = this;
@@ -502,13 +839,13 @@ cpdefine("inline:com-chilipeppr-widget-inlineeditor", ["chilipeppr_ready", "aceA
 
             // Ask bootstrap to scan all the buttons in the widget to turn
             // on popover menus
-            $('#' + this.id + ' .btn').popover({
-                delay: 1000,
-                animation: true,
-                placement: "auto",
-                trigger: "hover",
-                container: 'body'
-            });
+            // $('#' + this.id + ' .btn').popover({
+            //     delay: 1000,
+            //     animation: true,
+            //     placement: "auto",
+            //     trigger: "hover",
+            //     container: 'body'
+            // });
 
             // Init Say Hello Button on Main Toolbar
             // We are inlining an anonymous method as the callback here
@@ -667,15 +1004,15 @@ cpdefine("inline:com-chilipeppr-widget-inlineeditor", ["chilipeppr_ready", "aceA
         forkSetup: function() {
             var topCssSelector = '#' + this.id;
 
-            $(topCssSelector + ' .panel-title').popover({
-                title: this.name,
-                content: this.desc,
-                html: true,
-                delay: 1000,
-                animation: true,
-                trigger: 'hover',
-                placement: 'auto'
-            });
+            // $(topCssSelector + ' .panel-title').popover({
+            //     title: this.name,
+            //     content: this.desc,
+            //     html: true,
+            //     delay: 1000,
+            //     animation: true,
+            //     trigger: 'hover',
+            //     placement: 'auto'
+            // });
 
             var that = this;
             chilipeppr.load("http://fiddle.jshell.net/chilipeppr/zMbL9/show/light/", function() {
@@ -697,14 +1034,22 @@ cpdefine("inline:com-chilipeppr-widget-inlineeditor", ["chilipeppr_ready", "aceA
     <div id="com-chilipeppr-widget-inlineeditor" class="panel panel-default">
         <div class="panel-heading ">
 
-
             
             
             <div class="btn-toolbar pull-right" style="margin-top:4px;" role="toolbar">
                 <div class="btn-group">
-                    <button type="button" class="btn btn-xs btn-default btn-sayhello" data-delay="1000" data-animation="true" data-placement="auto" data-container="body" data-trigger="hover" data-title="Say Hello" data-content="Generate a hello message">Say Hello
+                    <span style="color:white;">Logged In As</span> 
+                </div>
+                <div class="btn-group">
+                    
+                    <button type="button" class="btn btn-xs btn-default btn-loggedin" 
+                    data-delay="1000" data-animation="true" data-placement="auto" 
+                    data-container="body" data-trigger="hover" data-title="Say Hello" 
+                    data-content="Generate a hello message">
+                        jlauer@zipwhip.com
                     </button>
                 </div>
+
                 <div class="btn-group">
                     <button type="button" class="btn btn-xs btn-default hidebody"><span class="glyphicon glyphicon-chevron-up"></span>
                     </button>
@@ -721,32 +1066,37 @@ cpdefine("inline:com-chilipeppr-widget-inlineeditor", ["chilipeppr_ready", "aceA
             <span class="panel-title">
                 <div class="logo">
                     <!--<a href="/" class="logo"></a>-->
+                    <!--<img src="http://www.chilipeppr.com/img/chilipeppr_logo.png" style="max-height:22px;padding-right:3px;">-->
+                    <!--<span xstyle="color:white;">ChiliPeppr</span>-->
                 </div>
                 <div class="title-words">Inline Editor</div>
                 
+                <a href="widget.html" class="title-words" style="color:white;padding:0 10px 0 20px;;">New</a>
+                
                 <div class="btn-toolbar" style="" role="toolbar">
-                    <div class="btn-group" style="padding-left:10px;margin-top:4px;">
-                        <button type="button" class="btn btn-xs btn-default btn-sayhello" 
+                    
+                    <div class="btn-group" style="padding-left:10px;margin-top:0px;">
+                        <button type="button" class="btn xbtn-xs btn-default btn-run" 
                         data-delay="1000" data-animation="true" data-placement="auto" data-container="body" 
                         data-trigger="hover" data-title="Say Hello" data-content="Generate a hello message">
                             Run
                         </button>
-                        <button type="button" class="btn btn-xs btn-default btn-sayhello" 
+                        <button type="button" class="btn xbtn-xs btn-default btn-save" 
                         data-delay="1000" data-animation="true" data-placement="auto" data-container="body" 
-                        data-trigger="hover" data-title="Say Hello" data-content="Generate a hello message">
+                        data-trigger="hover" data-title="Save" data-content="Generate a hello message">
                             Save
                         </button>
-                        <button type="button" class="btn btn-xs btn-default btn-sayhello" 
+                        <button type="button" class="btn xbtn-xs btn-default btn-fork" 
                         data-delay="1000" data-animation="true" data-placement="auto" data-container="body" 
                         data-trigger="hover" data-title="Say Hello" data-content="Generate a hello message">
                             Fork
                         </button>
-                        <button type="button" class="btn btn-xs btn-default btn-sayhello" 
+                        <button type="button" class="btn xbtn-xs btn-default btn-setasbase" 
                         data-delay="1000" data-animation="true" data-placement="auto" data-container="body" 
                         data-trigger="hover" data-title="Say Hello" data-content="Generate a hello message">
                             Set as Base
                         </button>
-                        <button type="button" class="btn btn-xs btn-default btn-sayhello" 
+                        <button type="button" class="btn xbtn-xs btn-default btn-embed" 
                         data-delay="1000" data-animation="true" data-placement="auto" data-container="body" 
                         data-trigger="hover" data-title="Say Hello" data-content="Generate a hello message">
                             Embed
@@ -758,22 +1108,37 @@ cpdefine("inline:com-chilipeppr-widget-inlineeditor", ["chilipeppr_ready", "aceA
         </div>
         <div class="panel-body">
             
+            <div class="vertical-buttons">
+                <button class="btn btn-xs btn-primary btn-vertical btn-showyourwidgets" style="">Your Widgets</button>    
+            </div>
+            
+            <div class="repo-sidebar hidden">
+                
+                <p>Your Widgets</p>
+                
+                <ul class="repo-list">
+                <li><a href="">JohnSidebarWidget</a></li>
+                <li><a href="">VerizonMbis</a></li>
+                </ul>
+            </div>
+            
             <div class="sidebar">
                 
                 <p>Widget ID</p>
-                <input type="text" class="form-control" placeholder="yourorg-appid" value="SprintCallCenter"></input>
+                <input type="hidden" class="codeRepoId" value="insert-original-coderepo-id-here">
+                <input type="text" class="form-control input-id" placeholder="YourWidgetId" value="MyNewWidget"></input>
                 
                 <p>Widget Name</p>
-                <input type="text" class="form-control" value="Sprint Call Center"></input>
+                <input type="text" class="form-control input-name" value="My New Widget"></input>
                 
                 <p>Widget Description</p>
-                <textarea class="form-control" rows="2">This widget adds the features required by Sprint to run toll free texting in their call center.</textarea>
+                <textarea class="form-control input-desc" rows="2"></textarea>
                     
                 <p>Private/Public</p>
-                <select class="form-control snippet-frontend-event">
-                    <option>Public</option>
-                    <option>Private This Account</option>
-                    <option>Private This Org</option>
+                <select class="form-control snippet-frontend-event select-pubpriv">
+                    <option value="public">Public</option>
+                    <option value="privacct">Private This Account</option>
+                    <option value="privorg">Private This Org</option>
                 </select>
                 
                 <p>Widget Image</p>
@@ -928,52 +1293,159 @@ cpdefine("inline:com-chilipeppr-widget-inlineeditor", ["chilipeppr_ready", "aceA
                 </div> <!-- end tab content -->
                 
             </div> <!-- end sidebar -->
-            <div class="content" style="xheight: 400px; opacity: 1;">
-          
-         
-                <fieldset class="column left" style="width: 55%;">
-                    
-                    <div class="window top" id="panel_html" data-panel_type="html" style="height: 23.7248%;">
-                        <div id="aceeditor-html" class="aceeditor"></div>
-                        <a href="#" class="windowLabel" data-panel="html">
-                          <span class="xlabel">HTML</span><i class="bts bt-gear"></i>
-                        </a>
-                    </div>
-                    
-                    <div class="handler handler_horizontal" style="top: 201px;"></div>
-                  
-                    <div class="window bottom" id="panel_js" data-panel_type="js" style="height: 76.2752%;">
-                        <div id="aceeditor-javascript" class="aceeditor"></div>
-                        <a href="#" class="windowLabel" data-panel="js">
-                          <span class="xlabel">JavaScript</span><i class="bts bt-gear"></i>
-                        </a>
-                    </div>
-                    
-                </fieldset>
+            <div class="content main-body" style="xheight: 400px; opacity: 1;">
                 
-                <div class="handler handler_vertical" style="left: 428px;"></div>
-                
-                <fieldset class="column right" style="width: 45%;">
-
-                    <div class="window top" id="panel_css" data-panel_type="css" style="height: 26.809%;">
-                        <div id="aceeditor-css" class="aceeditor"></div>
-                        <a href="#" class="windowLabel" data-panel="css">
-                          <span class="xlabel">CSS</span><i class="bts bt-gear"></i>
+                <!-- Javascript Editor. Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="active">
+                        <a href="#com-chilipeppr-widget-inlineeditor-jscript-tab1" role="tab" data-toggle="tab">
+                        Frontend
                         </a>
-                    </div>
-
-                    <div class="handler handler_horizontal" style="top: 227px;"></div>
-
-                    <div id="result" class="window bottom" style="height: 73.191%;">
-                        <iframe name="result" sandbox="allow-forms allow-popups allow-scripts allow-same-origin allow-modals" frameborder="0"></iframe>
+                    </li>
+                    <li class="xactive">
+                        <a href="#com-chilipeppr-widget-inlineeditor-jscript-tabtranspile" role="tab" data-toggle="tab">
+                        Frontend Transpiled
+                        </a>
+                    </li>
+                    <li class="xactive">
+                        <a href="#com-chilipeppr-widget-inlineeditor-jscript-tabtranspileexample" role="tab" data-toggle="tab">
+                        Frontend Example Transpiled
+                        </a>
+                    </li>
+                    <li class="xactive">
+                        <a href="#com-chilipeppr-widget-inlineeditor-jscript-tab2" role="tab" data-toggle="tab">
+                        Backend
+                        </a>
+                    </li>
+                    <li class="xactive">
+                        <a href="#com-chilipeppr-widget-inlineeditor-jscript-tabexample" role="tab" data-toggle="tab">
+                        Example Snippet
+                        </a>
+                    </li>
+                    <li class="xactive">
+                        <a href="#com-chilipeppr-widget-inlineeditor-jscript-tab3" role="tab" data-toggle="tab">
+                        Unit Tests
+                        </a>
+                    </li>
                     
-                        <span class="windowLabel">Result</span>
-                    
+                    <li class="xactive">
+                        <a href="#com-chilipeppr-widget-inlineeditor-jscript-tab5" role="tab" data-toggle="tab">
+                        Docs
+                        </a>
+                    </li>
+                </ul>
+                <!-- Javascript. Tab panes -->
+                
+                <div class="tab-content">
+                
+                    <!-- Javscript. Tab Javscript / HTML / CSS / Iframe -->
+                    <div class="tab-pane active" id="com-chilipeppr-widget-inlineeditor-jscript-tab1">
+              
+                        <div class="url-available">
+                            Avaialble at <span class="url-available-frontend"><a href="http://app.zipwhip.com/MyNewWidget/frontend">http://app.zipwhip.com/MyNewWidget/frontend</a></span>
+                        </div>
+                        
+                        <fieldset class="column left" style="width: 55%;">
+                            
+                            <div class="window top" id="panel_html" data-panel_type="html" style="height: 23%">
+                                <div id="aceeditor-example" class="aceeditor"></div>
+                                <a href="#" class="windowLabel" data-panel="html">
+                                  <span class="xlabel">Example JavaScript</span><i class="bts bt-gear"></i>
+                                </a>
+                            </div>
+                            
+                            <div class="hidden handler handler_horizontal" style="top: 201px;"></div>
+                          
+                            <div class="window bottom" id="panel_js" data-panel_type="js" style="height: 77%;">
+                              
+                                <div id="aceeditor-javascript" class="aceeditor"></div>
+                                <a href="#" class="windowLabel" data-panel="js">
+                                  <span class="xlabel">JavaScript</span><i class="bts bt-gear"></i>
+                                </a>
+                        
+                                    
+                            
+                            </div> 
+                        </fieldset>
+                        
+                        <div class="handler handler_vertical" style="left: 428px;"></div>
+                        
+                        <fieldset class="column right" style="width: 45%;">
+        
+                            <div class="window top" id="panel_html" data-panel_type="html" style="height: 20%;">
+                                <div id="aceeditor-html" class="aceeditor"></div>
+                                <a href="#" class="windowLabel" data-panel="html">
+                                  <span class="xlabel">HTML</span><i class="bts bt-gear"></i>
+                                </a>
+                            </div>
+                            
+                            <div class="window top" id="panel_css" data-panel_type="css" style="top:20%;height: 20%;">
+                                <div id="aceeditor-css" class="aceeditor"></div>
+                                <a href="#" class="windowLabel" data-panel="css">
+                                  <span class="xlabel">CSS</span><i class="bts bt-gear"></i>
+                                </a>
+                            </div>
+        
+                            <div class="hidden handler handler_horizontal" style="top: 227px;"></div>
+        
+                            <div id="result" class="window bottom" style="height: 60%;">
+                                <iframe id="main-iframe" name="result" sandbox="allow-forms allow-popups allow-scripts allow-same-origin allow-modals" frameborder="0"></iframe>
+                            
+                                <span class="hidden windowLabel">Result</span>
+                            
+                            </div>
+        
+                        </fieldset>
+
                     </div>
+                         
+                    <!-- Javscript. Tab Transpiled -->
+                    <div class="tab-pane xactive" id="com-chilipeppr-widget-inlineeditor-jscript-tabtranspile">
+                        <div class="url-available " xstyle="float:left;">
+                            Avaialble at <span class="url-available-frontend"><a href="http://app.zipwhip.com/MyNewWidget/frontend">http://app.zipwhip.com/MyNewWidget/frontend</a></span>
+                        <button xstyle="float:left;" class="btn btn-xs btn-default btn-transpilesave">Override Save Transpiled</button>
+                        </div>
+                        
 
-                </fieldset>
+                        <div id="aceeditor-transpiledjs" class="aceeditor"></div>
+                    </div>
+                    
+                    <!-- Javscript. Tab Transpiled Example -->
+                    <div class="tab-pane xactive" id="com-chilipeppr-widget-inlineeditor-jscript-tabtranspileexample">
+                        <div class="url-available " xstyle="float:left;">
+                            Avaialble at <span class="url-available-frontendexample"><a href="http://app.zipwhip.com/MyNewWidget/frontend">http://app.zipwhip.com/MyNewWidget/frontendexample</a></span>
+                        <button xstyle="float:left;" class="btn btn-xs btn-default btn-transpileexamplesave">Override Save Transpiled</button>
+                        </div>
+                        
 
+                        <div id="aceeditor-transpiledexamplejs" class="aceeditor"></div>
+                    </div>
+                    
+                    <!-- Javscript. Tab 2. Backend. -->
+                    <div class="tab-pane xactive" id="com-chilipeppr-widget-inlineeditor-jscript-tab2">
+                        <div class="url-available">
+                            Avaialble at <span class="url-available-backend"><a href="http://app.zipwhip.com/MyNewWidget/backend">http://app.zipwhip.com/MyNewWidget/backend</a></span>
+                        </div>
 
+                        <div id="aceeditor-backendjs" class="aceeditor"></div>
+                    </div>
+                    
+                    <!-- Javscript. Tab Example. -->
+                    <div class="tab-pane xactive" id="com-chilipeppr-widget-inlineeditor-jscript-tabexample">
+                        
+                        <div id="aceeditor-example2" class="aceeditor"></div>
+                        
+                    </div>
+                    <!-- Javscript. Tab 3 -->
+                    <div class="tab-pane xactive" id="com-chilipeppr-widget-inlineeditor-jscript-tab3">
+                    </div>
+                    
+                    
+                    <!-- Javscript. Tab 5 -->
+                    <div class="tab-pane xactive" id="com-chilipeppr-widget-inlineeditor-jscript-tab5">
+                    </div>
+                    
+                </div><!-- end tab content -->
 
             </div>
 

@@ -1,4 +1,4 @@
-/* global requirejs cprequire cpdefine chilipeppr THREE */
+/* global $ requirejs cprequire cpdefine chilipeppr THREE */
 // Defining the globals above helps Cloud9 not show warnings for those variables
 
 // ChiliPeppr Widget/Element Javascript
@@ -34,6 +34,7 @@ requirejs.config({
         AceEditorCss: '//cdn.jsdelivr.net/ace/1.2.3/min/mode-css',
         AceEditorHtml: '//cdn.jsdelivr.net/ace/1.2.3/min/mode-html',
         AceEditorJavascript: '//cdn.jsdelivr.net/ace/1.2.3/min/mode-javascript',
+        AceEditorJsx: '//cdn.jsdelivr.net/ace/1.2.3/min/mode-jsx',
     },
     shim: {
         // See require.js docs for how to define dependencies that
@@ -42,7 +43,8 @@ requirejs.config({
         AceEditorCss: ["ace"],
         AceEditorHtml: ["ace"],
         AceEditorJavascript: ["ace"],
-        aceAutoCompletion: ["ace", "AceEditorHtml", "AceEditorCss", "AceEditorJavascript"]
+        AceEditorJsx: ["ace"],
+        aceAutoCompletion: ["ace", "AceEditorHtml", "AceEditorCss", "AceEditorJavascript", "AceEditorJsx"]
     }
 });
 
@@ -153,27 +155,259 @@ cpdefine("inline:com-chilipeppr-widget-inlineeditor", ["chilipeppr_ready", "aceA
             var that = this;
             setTimeout(function() {
                 that.initAceEditor();
-            }, 1000);
+            }, 500);
+            this.setupInfoAreaId();
+            this.pointIframeToFrontend();
+            this.updateLauncherUrls();
+            this.populateRepoSidebar();
             
-
             console.log("I am done being initted.");
         },
+        setupInfoAreaId: function() {
+            // set the ID of this widget if we have one
+            var repoid = this.getOrigCodeRepoId();
+            console.log("repoid:", repoid);
+            if (repoid) {
+                $('#' + this.id + " .input-id").val(repoid);
+                
+            } else {
+                $('#' + this.id + " .input-id").val("MyNewWidget");
+            
+            }
+        },
+        pointIframeToFrontend: function() {
+            console.log("pointIframeToFrontend");
+            var curLoc = window.location;
+            curLoc += "/frontend";
+            console.log("curLoc:", curLoc);
+            
+            var repoid = this.getOrigCodeRepoId();
+            console.log("repoid:", repoid);
+            if (repoid) {
+                console.log("will send iframe to:", curLoc);
+                // load iframe src
+                document.getElementById('main-iframe').contentWindow.location = curLoc;
+            } else {
+                // do nothing with iframe. maybe show ("not saved yet")
+            }
+            
+        },
+        updateLauncherUrls: function() {
+            // url-available-frontend
+            var repoid = this.getOrigCodeRepoId();
+            if (repoid) {
+                var url = window.location + "/frontend";
+                var urlbackend = window.location + "/backend";
+                $('.url-available-frontend').html('<a href="' + url + '">' + url + '</a>');
+                $('.url-available-backend').html('<a href="' + urlbackend + '">' + urlbackend + '</a>');
+            } else {
+                // do nothing with iframe. maybe show ("not saved yet")
+                $('.url-available-frontend').html('(Save your widget first)');
+                $('.url-available-backend').html('(Save your widget first)');
+            }
+        },
+        setupInfoArea: function(data) {
+            // set the ID of this widget if we have one
+            
+            if (data && 'info' in data) {
+                console.log("setting up info area on left side. data:", data);
+                var el = $('#' + this.id);
+                el.find('.input-name').val(data.info.name);
+                el.find('.input-desc').val(data.info.description);
+                document.title = data.id + " - " + data.info.name;
+            }
+        },
+        populateRepoSidebar: function() {
+            
+            $.ajax({
+                type: "GET",
+                url: "/repos",
+            })
+            .done(function(data) {
+                // console.log("done getting code repos");
+                // populate the list
+                // console.log("data from get code repos:", data);
+                var repoListEl = $('.repo-list');
+                repoListEl.empty();
+                data.forEach(function(item, i) {
+                    // console.log("repos item:", item);
+                    repoListEl.append($('<li><a href="/' + item.id + '">' + item.id + "</a></li>"));
+                })
+            })
+            .fail(function() {
+                console.log("failed getting code repo list");
+            });
+        },
+        showRepoSidebar: function() {
+            $('.main-body').css('margin-left', '450px');
+            $('.sidebar').css('left', '190px');
+            $('.repo-sidebar').removeClass('hidden');
+        },
+        hideRepoSidebar: function() {
+            $('.main-body').css('margin-left', '284px');
+            $('.sidebar').css('left', '24px');
+            $('.repo-sidebar').addClass('hidden');
+        },
+        toggleRepoSidebar: function() {
+            if ($('.repo-sidebar').hasClass('hidden')) {
+                // it's hidden, show it
+                this.showRepoSidebar();
+            } else {
+                this.hideRepoSidebar();
+            }
+        },
+        saveCodeRepoTranspiledOverride: function() {
+            console.log("saveCodeRepo. this:", this);
+            
+            // get main dom obj
+            var el = $('#' + this.id);
+            
+            // build up the POST from all the elements
+            var info = {
+                id: el.find('.input-id').val(),
+                user: el.find('.btn-loggedin').text().trim(),
+                transpiledjs: this.aceEditors["aceeditor-transpiledjs"].getSession().getValue(),
+            }
+            console.log("about to saveCodeRepoTranspiledOverride. info:", info);
+            
+            $.ajax({
+                type: "POST",
+                url: "/savetranspiled",
+                data: info,
+                // success: this.onSaveCodeRepoSuccess.bind(this),
+                // dataType: "json"
+            })
+            .done(function() {
+                console.log("done posting code");
+                
+                // this is good. now we need to redirect the page so we load our new
+                // url for our content
+                // window.location.replace("/" + info.id);
+                // reload the iframe
+                document.getElementById('main-iframe').contentWindow.location.reload();
+            })
+            .fail(function() {
+                console.log("failed posting code");
+            });
+        },
+        saveCodeRepo: function() {
+            console.log("saveCodeRepo. this:", this);
+            
+            // get main dom obj
+            var el = $('#' + this.id);
+            
+            console.log("user to save under:", el.find('.btn-loggedin').text());
+            
+            // build up the POST from all the elements
+            var info = {
+                id: el.find('.input-id').val(),
+                user: el.find('.btn-loggedin').text().trim(),
+                name: el.find('.input-name').val(),
+                description: el.find('.input-desc').val(),
+                html: this.aceEditors["aceeditor-html"].getSession().getValue(),
+                css: this.aceEditors["aceeditor-css"].getSession().getValue(),
+                js: this.aceEditors["aceeditor-javascript"].getSession().getValue(),
+                backendjs: this.aceEditors["aceeditor-backendjs"].getSession().getValue(),
+                examplejs: this.aceEditors["aceeditor-example"].getSession().getValue(),
+            }
+            if (info.name.length == 0) info.name = " ";
+            if (info.description.length == 0) info.description = " ";
+            console.log("about to saveCodeRepo. info:", info);
+            
+            $.ajax({
+                type: "POST",
+                url: "/save",
+                data: info,
+                // success: this.onSaveCodeRepoSuccess.bind(this),
+                // dataType: "json"
+            })
+            .done(function(response) {
+                console.log("done posting code. response:", response);
+                
+                alert(JSON.stringify(response));
+                
+                // this is good. now we need to redirect the page so we load our new
+                // url for our content
+                window.location.replace("/" + info.id);
+            })
+            .fail(function() {
+                console.log("failed posting code");
+            });
+            
+        },
+        getOrigCodeRepoId: function() {
+            // the way to determine this is if we have the hidden field called codeRepoId
+            // filled in with an id (we could also maybe analyze the url)
+            var origCodeRepoId = $('#' + this.id + " .codeRepoId").val();
+            console.log("origCodeRepoId:", origCodeRepoId);
+            if (origCodeRepoId && origCodeRepoId.match(/insert-original-coderepo-id-here/)) {
+                // there is no swapped in id, so this is a raw new load so show sample
+                return null;
+            } else {
+                return origCodeRepoId;
+            }
+        },
         initAceEditor: function() {
-            var sampleContent = `<div id="SprintCallCenterWidget" class="widget">
-    <div class="panel">
-        <div class="panel-heading">
-            Sprint Call Center
-        </div>
-        <div class="panel-body">
-        </div>
-    </div>
+            
+            // we need to see if we have data from the database or if we need
+            // to put sample data in
+            var origCodeRepoId = this.getOrigCodeRepoId();
+            
+            if (origCodeRepoId) {
+                // we have an id, get the data
+                var that = this;
+                $.getJSON("/get?id=" + origCodeRepoId, function(data) {
+                    console.log("got data back from /get. data:", data);
+                    if (data.success == true) {
+                        // we got the data. yeah!
+                        that.loadAce("aceeditor-html", data.info.html, "ace/mode/html");
+                        that.loadAce("aceeditor-css", data.info.css, "ace/mode/css");
+                        // that.loadAce("aceeditor-javascript", data.info.js, "ace/mode/javascript");
+                        that.loadAce("aceeditor-javascript", data.info.js, "ace/mode/jsx");
+                        that.loadAce("aceeditor-backendjs", data.info.backendjs ? data.info.backendjs : "// Backend JS", "ace/mode/javascript");
+                        that.loadAce("aceeditor-transpiledjs", data.info.transpiledjs ? data.info.transpiledjs : "// (Read-Only) Transpiled JS", "ace/mode/javascript"); 
+                        that.loadAce("aceeditor-example", data.info.examplejs ? data.info.examplejs : "// Example JS", "ace/mode/jsx"); 
+                        that.loadAce("aceeditor-transpiledexamplejs", data.info.transpiledexamplejs ? data.info.transpiledexamplejs : "// (Read-Only) Transpiled Example JS", "ace/mode/javascript"); 
+                        that.setupInfoArea(data);
+                    } else {
+                        // failed
+                        console.log("failed to get data. fallback to sample data???");
+                    }
+                });
+                
+            } else {
+                // load sample data
+                var sampleContent = `<div id="MyNewWidget" class="widget">
+    <div id="MyNewWidgetBody" class="panel-body"></div>
 </div>
 `;
-             this.loadAce("aceeditor-html", sampleContent, "ace/mode/html");
-             this.loadAce("aceeditor-css", "#SprintCallCenterWidget {\n}", "ace/mode/css");
-             var sampleContent = `class SprintCallCenterWidget extends Zipwhip.Widget {
+                this.loadAce("aceeditor-html", sampleContent, "ace/mode/html");
+                this.loadAce("aceeditor-css", "#MyNewWidget {\n}", "ace/mode/css");
+                var sampleContent = `// Frontend Javascript / JSX
+// Avaialble at http://app.zipwhip.com/MyNewWidget/frontend
+
+// imports Zipwhip from '//app.zipwhip.com/Zipwhip/frontend';
+
+class MyNewWidget { // extends Zipwhip.Widget {
+    
     constructor(props) {
-        super(props);
+        // super(props);
+        // import all ReactBootstrap objects
+        for (var i in ReactBootstrap) {
+          if (!i.match(/^_/)) window[i] = ReactBootstrap[i];
+        }
+    }
+    
+    init() {
+        const panelInstance = (
+            <Panel header="My New Widget">
+                Panel content
+            </Panel>
+        );
+        
+        var mountNode = document.getElementById('MyNewWidgetBody');
+        
+        ReactDOM.render(panelInstance, mountNode);
     }
     
     onActivate() {
@@ -192,14 +426,61 @@ cpdefine("inline:com-chilipeppr-widget-inlineeditor", ["chilipeppr_ready", "aceA
         
     }
 }
+var instance = new MyNewWidget();
+instance.init();
 `;
-             this.loadAce("aceeditor-javascript", sampleContent, "ace/mode/javascript");
+                this.loadAce("aceeditor-javascript", sampleContent, "ace/mode/jsx");
+                sampleContent = `// URL of this code is 
+// https://app.zipwhip.com/MyNewWidget/backend
+
+// Backend Javascript runs in Node.js sandbox
+// You must export a handler function. That function is called with (event, callback)
+// You must call the callback to end the incoming request. The format of the callback
+// is callback({contentType:'text/json', body:JSON.stringify(result)}); where 
+// contentType is any valid browser format and the body is a string. 
+
+module.exports = {
+  onHttpsRequest: function(event, callback) {
+    // console.log('Received event:', event);
+    console.log("onHttpsRequest. url:", event.req.url);
+    
+    var that = this;
+    var url = require('url');
+    var url_parts = url.parse(event.req.url, true);
+    var query = url_parts.query;
+    
+    var result = {};
+    
+    if ('getParam1' in query) {
+        console.log("getParam1 being processed.");
+    } else if ('getParam2' in query) {
+        console.log("getParam2 being processed.");
+    } else {
+        console.log("default query being processed");
+    }
+    
+    callback({contentType:'text/json', body:JSON.stringify(result)});
+    
+  },
+}
+`;
+                this.loadAce("aceeditor-backendjs", sampleContent, "ace/mode/javascript");
+                
+                sampleContent = `// This code executes first
+require(['MyNewWidget'], function(MyNewWidget) {
+  console.log("inside require callback");
+  var instance = new MyNewWidget();
+  instance.init();
+});                
+`;
+                this.loadAce("aceeditor-example", sampleContent, "ace/mode/jsx");
+            }
         },
         aceCurrentSessionName: null,
         aceCurrentSession: null,
-        aceEditors: [],
-        aceSessions: [],
-        aceIsLoaded: [],
+        aceEditors: {},
+        aceSessions: {},
+        aceIsLoaded: {},
         loadAce: function(aceid, sampleContent, aceMode) {
 
             // debugger;
@@ -278,7 +559,7 @@ cpdefine("inline:com-chilipeppr-widget-inlineeditor", ["chilipeppr_ready", "aceA
 
             } else {
                 console.log("ace is currently undefined so retry later");
-                setTimeout(this.loadAce.bind(this), 1000);
+                setTimeout(this.loadAce.bind(this), 100);
             }
             
             
@@ -294,6 +575,20 @@ cpdefine("inline:com-chilipeppr-widget-inlineeditor", ["chilipeppr_ready", "aceA
          * the entire DOM of the widget.
          */
         btnSetup: function() {
+
+            // toggle repos button
+            $('#' + this.id + ' .btn-showyourwidgets').click(this.toggleRepoSidebar.bind(this));
+            
+            // save button
+            $('#' + this.id + ' .btn-save').click(this.saveCodeRepo.bind(this));
+            
+            // save override transpiled
+            $('#' + this.id + ' .btn-transpilesave').click(this.saveCodeRepoTranspiledOverride.bind(this));
+
+            // new button
+            $('#' + this.id + ' .btn-new').click(function() {
+                window.location.href = "widget.html";
+            });
 
             // Chevron hide/show body
             var that = this;
@@ -311,13 +606,13 @@ cpdefine("inline:com-chilipeppr-widget-inlineeditor", ["chilipeppr_ready", "aceA
 
             // Ask bootstrap to scan all the buttons in the widget to turn
             // on popover menus
-            $('#' + this.id + ' .btn').popover({
-                delay: 1000,
-                animation: true,
-                placement: "auto",
-                trigger: "hover",
-                container: 'body'
-            });
+            // $('#' + this.id + ' .btn').popover({
+            //     delay: 1000,
+            //     animation: true,
+            //     placement: "auto",
+            //     trigger: "hover",
+            //     container: 'body'
+            // });
 
             // Init Say Hello Button on Main Toolbar
             // We are inlining an anonymous method as the callback here
@@ -476,15 +771,15 @@ cpdefine("inline:com-chilipeppr-widget-inlineeditor", ["chilipeppr_ready", "aceA
         forkSetup: function() {
             var topCssSelector = '#' + this.id;
 
-            $(topCssSelector + ' .panel-title').popover({
-                title: this.name,
-                content: this.desc,
-                html: true,
-                delay: 1000,
-                animation: true,
-                trigger: 'hover',
-                placement: 'auto'
-            });
+            // $(topCssSelector + ' .panel-title').popover({
+            //     title: this.name,
+            //     content: this.desc,
+            //     html: true,
+            //     delay: 1000,
+            //     animation: true,
+            //     trigger: 'hover',
+            //     placement: 'auto'
+            // });
 
             var that = this;
             chilipeppr.load("http://fiddle.jshell.net/chilipeppr/zMbL9/show/light/", function() {
