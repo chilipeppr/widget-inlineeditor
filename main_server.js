@@ -533,6 +533,12 @@ button.jsfiddle {
                 
                 ##LoginForm##
                 
+                ##PhoneUtil##
+                
+                ##SoboWidget##
+                
+                ##VerizonMbisWidget##
+                
             </div>
         </div>
     </div>
@@ -592,7 +598,28 @@ button.jsfiddle {
                                     
                                     html = html.replace("##LoginForm##", example2);
                                     
-                                    callback(html);
+                                    getCodeRepoDb("PhoneUtil", function(err, data) {
+                                        var example2 = showSnippetResult(data.Item.info);
+                                        
+                                        html = html.replace("##PhoneUtil##", example2);
+                                        
+                                        getCodeRepoDb("SoboWidget", function(err, data) {
+                                            var example2 = showSnippetResult(data.Item.info);
+                                            
+                                            html = html.replace("##SoboWidget##", example2);
+                                            
+                                            getCodeRepoDb("VerizonMbisWidget", function(err, data) {
+                                                var example2 = showSnippetResult(data.Item.info);
+                                                
+                                                html = html.replace("##VerizonMbisWidget##", example2);
+                                                
+                                                callback(html);
+                                            });
+                                            
+                                        });
+                                        
+                                    });
+                                   
                                 });
                                 
                             });
@@ -888,6 +915,10 @@ var getAllCodeRepoDb = function(callback) {
                 docClient.scan(params, onScan);
             } else {
                 // we are done scanning
+                // sort
+                onScanResults.sort(function(a, b) {
+                    return a.id.localeCompare(b.id);
+                });
                 if (callback) callback(err, onScanResults);
             }
         }

@@ -326,7 +326,10 @@ cpdefine("inline:com-chilipeppr-widget-inlineeditor", ["chilipeppr_ready", "aceA
             .done(function(response) {
                 console.log("done posting code. response:", response);
                 
-                alert(JSON.stringify(response));
+                // if there was an error transpiling, show it to them
+                if ('errorTranspiling' in response) {
+                    alert(JSON.stringify(response));
+                }
                 
                 // this is good. now we need to redirect the page so we load our new
                 // url for our content
@@ -592,7 +595,9 @@ require(['MyNewWidget'], function(MyNewWidget) {
          
         },
         fileLocalSave: function(event) {
-            console.log("got fileLocalSave. event:", event);    
+            //console.log("saveCodeRepo to get called. this:", this);
+            this.saveCodeRepo();
+            console.log("got fileLocalSave. event:", event); 
         },
         /**
          * Call this method from init to setup all the buttons when this widget
