@@ -21,6 +21,11 @@ var mimeTypes = {
   "css": "text/css"
 };
 
+
+// var rootUrl = 'https://widget-inlineeditor-chilipeppr.c9users.io';
+var rootOverride = true;
+var rootUrl = 'http://lauer.zipwhip.com';
+
 http.createServer(function(req, res) {
 
     var uri = url.parse(req.url).pathname;
@@ -673,7 +678,7 @@ var showSnippetResult = function(data) {
         </script>
         
         <div id="editor-` + data.id + `" style="height:300px;"></div>
-        <a class="code-toggle" role="button" href="https://widget-inlineeditor-chilipeppr.c9users.io/` + data.id + `" target="_blank">Edit in Zipwhip Inline Editor</a>
+        <a class="code-toggle" role="button" href="` + rootUrl + `/` + data.id + `" target="_blank">Edit in Zipwhip Inline Editor</a>
 
         <form id="jsfiddleform-` + data.id + `" method="post" action="https://jsfiddle.net/api/post/library/pure/" target="_blank">
             <textarea style="display:none" name="html" id="html-` + data.id + `"><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.js"></script>
@@ -683,7 +688,7 @@ var showSnippetResult = function(data) {
             <input type="hidden" name="panel_js" value="3" />
             <textarea style="display:none" type="hidden" name="js" id="js-` + data.id + `">requirejs.config({
     paths: {
-      ` + data.id + `: 'https://widget-inlineeditor-chilipeppr.c9users.io/` + data.id + `/frontend/object',
+      ` + data.id + `: '` + rootUrl + `/` + data.id + `/frontend/object',
     },
     shim: {
     }
@@ -863,19 +868,21 @@ var getCodeRepoDb = function(id, callback) {
         } else {
             console.log("GetItem succeeded:", JSON.stringify(data, null, 2));
             
-            // convert data
-            if (data && "Item" in data) {
-                console.log("have some level of data here to mangle");
-                if (data.Item.info.js) 
-                    data.Item.info.js = data.Item.info.js.replace(new RegExp("https://widget-inlineeditor-chilipeppr.c9users.io", 'g'), "http://lauer.zipwhip.com");
-                if (data.Item.info.examplejs) 
-                    data.Item.info.examplejs = data.Item.info.examplejs.replace(new RegExp("https://widget-inlineeditor-chilipeppr.c9users.io", 'g'), "http://lauer.zipwhip.com");
-                if (data.Item.info.transpiledexamplejs) 
-                    data.Item.info.transpiledexamplejs = data.Item.info.transpiledexamplejs.replace(new RegExp("https://widget-inlineeditor-chilipeppr.c9users.io", 'g'), "http://lauer.zipwhip.com");
-                if (data.Item.info.transpiledjs) 
-                    data.Item.info.transpiledjs = data.Item.info.transpiledjs.replace(new RegExp("https://widget-inlineeditor-chilipeppr.c9users.io", 'g'), "http://lauer.zipwhip.com");
-                
-                
+            // convert data if rootUrl override is on (like when moving this to lauer.zipwhp.com)
+            if (rootOverride) {
+                if (data && "Item" in data) {
+                    console.log("have some level of data here to mangle");
+                    if (data.Item.info.js) 
+                        data.Item.info.js = data.Item.info.js.replace(new RegExp("https://widget-inlineeditor-chilipeppr.c9users.io", 'g'), "http://lauer.zipwhip.com");
+                    if (data.Item.info.examplejs) 
+                        data.Item.info.examplejs = data.Item.info.examplejs.replace(new RegExp("https://widget-inlineeditor-chilipeppr.c9users.io", 'g'), "http://lauer.zipwhip.com");
+                    if (data.Item.info.transpiledexamplejs) 
+                        data.Item.info.transpiledexamplejs = data.Item.info.transpiledexamplejs.replace(new RegExp("https://widget-inlineeditor-chilipeppr.c9users.io", 'g'), "http://lauer.zipwhip.com");
+                    if (data.Item.info.transpiledjs) 
+                        data.Item.info.transpiledjs = data.Item.info.transpiledjs.replace(new RegExp("https://widget-inlineeditor-chilipeppr.c9users.io", 'g'), "http://lauer.zipwhip.com");
+                    
+                    
+                }
             }
         }
         
