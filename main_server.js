@@ -862,7 +862,23 @@ var getCodeRepoDb = function(id, callback) {
             console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2));
         } else {
             console.log("GetItem succeeded:", JSON.stringify(data, null, 2));
+            
+            // convert data
+            if (data && "Item" in data) {
+                console.log("have some level of data here to mangle");
+                if (data.Item.info.js) 
+                    data.Item.info.js = data.Item.info.js.replace(new RegExp("https://widget-inlineeditor-chilipeppr.c9users.io", 'g'), "http://lauer.zipwhip.com");
+                if (data.Item.info.examplejs) 
+                    data.Item.info.examplejs = data.Item.info.examplejs.replace(new RegExp("https://widget-inlineeditor-chilipeppr.c9users.io", 'g'), "http://lauer.zipwhip.com");
+                if (data.Item.info.transpiledexamplejs) 
+                    data.Item.info.transpiledexamplejs = data.Item.info.transpiledexamplejs.replace(new RegExp("https://widget-inlineeditor-chilipeppr.c9users.io", 'g'), "http://lauer.zipwhip.com");
+                if (data.Item.info.transpiledjs) 
+                    data.Item.info.transpiledjs = data.Item.info.transpiledjs.replace(new RegExp("https://widget-inlineeditor-chilipeppr.c9users.io", 'g'), "http://lauer.zipwhip.com");
+                
+                
+            }
         }
+        
         if (callback) callback(err, data);
     });    
 };
